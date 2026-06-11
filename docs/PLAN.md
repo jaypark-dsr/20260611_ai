@@ -1,33 +1,30 @@
-# PLAN — IT 뉴스 대시보드 1차 구현
+# PLAN — IT 뉴스 대시보드
 
 ## 무엇을 왜 만드는가
 
-전산팀이 매일 아침 IT, AI, 보안, 클라우드, 개발, 경제 동향을 빠르게 학습하도록 돕는 내부용 정적 뉴스 대시보드를 만든다. 서버나 로그인 없이 브라우저에서 바로 열리고, 수동 편집 가능한 JSON 데이터로 동작하며, 추후 자동 수집으로 확장 가능한 구조를 갖춘다.
+전산팀이 매일 아침 IT, AI, 보안, 클라우드, 개발, 경제 동향을 빠르게 학습하도록 돕는 내부용 정적 뉴스 대시보드를 만든다. 서버나 로그인 없이 브라우저에서 바로 열린다. 뉴스 데이터는 RSS 자동 수집(GitHub Actions + scripts/fetch-news.mjs)으로 매일 아침 갱신하며, 한국어 소스를 우선하고 주제 키워드로 카테고리를 재분류한다. 필요 시 news.json 수동 보정도 가능하다.
 
 ## 성공 기준
 
-1. 브라우저에서 index.html을 열면 뉴스 대시보드가 표시된다.
-2. 오늘의 핵심 요약이 상단에 보인다.
-3. 카테고리 필터 버튼이 동작한다. IT, AI, 보안, 클라우드, 개발, 경제 전환이 즉시 반영된다.
-4. 각 뉴스 카드에 제목, 요약, 출처, 원문 링크, 중요도, 읽기 시간, 태그가 표시된다.
-5. 팀 학습 질문과 오늘의 토론거리 영역이 보인다.
-6. 모바일과 데스크톱에서 모두 읽기 쉬운 반응형 레이아웃이다.
-7. JavaScript 콘솔 에러가 없다.
+1. 로컬 서버로 열면 뉴스 대시보드가 표시되고, 데이터 로드 실패 시 안내 배너가 뜬다.
+2. 오늘의 핵심 요약(중요 이슈 우선)이 상단에 보인다.
+3. 카테고리 필터가 동작한다. IT, AI, 보안, 클라우드, 개발, 경제 전환이 즉시 반영된다.
+4. 각 뉴스 카드에 제목, 요약, 출처, 원문 링크, 중요도, 읽기 시간, 태그, 언어가 표시된다.
+5. 기간 보기(최신/일자별/월별), 중요만·북마크만·안 읽은 것만 필터, 읽음 표시가 동작한다.
+6. 다크 모드와 모바일/데스크톱 반응형 레이아웃이 동작한다.
+7. RSS 자동 수집이 한국어 우선으로 동작하고, 본문 전체를 저장하지 않는다.
+8. JavaScript 콘솔 에러가 없다.
 
-## 단계와 검증 방법
+## 진행 단계 (모두 완료)
 
-| 단계 | 작업 | 검증 방법 |
+| 단계 | 작업 | 상태 |
 | --- | --- | --- |
-| 0 | 산출물 3종 생성 (PLAN, checklist, context-notes) | 세 파일 존재 확인 |
-| 1 | 성공 기준 정의 | 위 7개 기준 문서화 |
-| 2 | UI/UX 화면 구조 설계 | context-notes에 섹션 구조 기록 |
-| 3 | 웹사이트 파일 구현 (index.html, styles.css, app.js, news.json) | 파일 첫 줄 역할 주석, 문법 검증 |
-| 4 | 반응형/접근성 점검 | semantic 태그, aria, 대비, 브레이크포인트 확인 |
-| 5 | 브라우저 호환성 점검 | Chrome/Edge/Safari 위험 구문 점검 |
-| 6 | 전체 리뷰 | 행동 지침 1~10 준수 확인 |
-| 7 | 피드백과 후속 과제 정리 | 다음 버전 후보 목록 |
-| 8 | 최종 검증과 커밋 | 정적 검증 + git commit |
+| 1차 | 정적 대시보드 + 카테고리/요약/학습질문 + 샘플 데이터 | 완료 |
+| 2차 | RSS 자동 수집(GitHub Actions), 다크모드, 검색, 북마크, 아카이브 | 완료 |
+| 3차 | 한국어 소스 + 주제 재분류 + 중요도 자동분류, 기간 보기, 읽음, 폴백 배너 | 완료 |
 
 ## 산출물
 
-index.html, assets/css/styles.css, assets/js/app.js, assets/data/news.json, README.md, CLAUDE.md, checklist.md, context-notes.md, agents/*.md
+- 사이트 — index.html, assets/css/styles.css, assets/js/app.js, assets/data/news.json, assets/data/archive/*.json
+- 수집 — scripts/fetch-news.mjs, scripts/rss-sources.json, .github/workflows/fetch-news.yml, package.json
+- 문서 — README.md, CLAUDE.md, docs/PLAN.md, docs/checklist.md, docs/context-notes.md, agents/*.md
