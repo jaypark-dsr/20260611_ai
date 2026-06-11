@@ -22,8 +22,9 @@
 ## 2. 프로젝트 범위
 
 - 정적 웹사이트 형태의 뉴스 대시보드를 만든다.
-- 카테고리별 뉴스 카드, 오늘의 핵심 요약, 중요도 표시, 읽기 시간, 출처, 태그, 팀 학습 질문, 북마크 스타일 영역을 제공한다.
-- 실제 API 연동 전에도 동작하도록 샘플 데이터와 수동 편집 가능한 데이터 파일을 제공한다.
+- 카테고리별 뉴스 카드, 오늘의 핵심 요약, 중요도 표시, 읽기 시간, 출처, 태그, 팀 학습 질문, 북마크, 읽음 표시, 일자별·월별 보기 영역을 제공한다.
+- 뉴스 데이터는 RSS 자동 수집(GitHub Actions + scripts/fetch-news.mjs)으로 매일 아침 갱신한다. 한국어 소스를 우선하며 주제 키워드로 카테고리를 재분류한다.
+- 데이터 파일(news.json)은 자동 수집이 기본이며 필요 시 수동 보정도 가능하다. fetch 실패 시 화면 폴백 안내 배너를 표시한다.
 - 반응형 레이아웃, 접근성, 브라우저 호환성을 고려한다.
 
 ## 3. 주요 산출물
@@ -31,11 +32,13 @@
 - index.html
 - assets/css/styles.css
 - assets/js/app.js
-- assets/data/news.json
+- assets/data/news.json, assets/data/archive/*.json (일자별 아카이브)
+- scripts/fetch-news.mjs, scripts/rss-sources.json (RSS 자동 수집)
+- .github/workflows/fetch-news.yml (매일 자동 수집)
+- package.json (수집 전용 의존성 rss-parser)
 - README.md
 - CLAUDE.md
-- checklist.md
-- context-notes.md
+- docs/PLAN.md, docs/checklist.md, docs/context-notes.md (작업 산출물)
 - agents/*.md
 
 ## 4. 디렉토리 구조
@@ -44,18 +47,24 @@
 news-dashboard/
   CLAUDE.md
   README.md
-  checklist.md
-  context-notes.md
-  PLAN.md
+  package.json          수집 전용 의존성(rss-parser)
   index.html
   assets/
-    css/
-      styles.css
-    js/
-      app.js
+    css/styles.css
+    js/app.js
     data/
-      news.json
+      news.json         최신 수집 결과
+      archive/          일자별 스냅샷과 index.json
     icons/
+  scripts/
+    fetch-news.mjs      RSS 수집 스크립트
+    rss-sources.json    카테고리별 RSS 피드와 분류 규칙
+  .github/workflows/
+    fetch-news.yml      매일 아침 자동 수집
+  docs/
+    PLAN.md             구현 계획과 성공 기준
+    checklist.md        단계별 진행 체크리스트
+    context-notes.md    결정 사항과 가정 기록
   agents/
     PM.md
     reviewer.md
@@ -70,10 +79,10 @@ news-dashboard/
 
 - HTML5
 - CSS3
-- Vanilla JavaScript
-- JSON 기반 샘플 데이터
-- [추정] 초기 버전은 빌드 도구 없이 브라우저에서 바로 열 수 있는 구조로 만든다.
-- [추정] 추후 확장 시 Vite, RSS Parser, GitHub Actions, 서버리스 함수 도입을 고려할 수 있다.
+- Vanilla JavaScript (사이트 런타임은 무의존성, 빌드 도구 없이 브라우저에서 바로 열린다)
+- JSON 기반 데이터 (RSS 자동 수집 결과 + 필요 시 수동 보정)
+- Node.js + rss-parser + GitHub Actions (수집 파이프라인 전용. 사이트 런타임과 분리)
+- [추정] 추후 확장 시 서버리스 함수, Slack 연동, 검색 고도화 도입을 고려할 수 있다.
 
 ## 6. 코딩 컨벤션
 
@@ -88,17 +97,17 @@ news-dashboard/
 ## 7. 금지사항과 주의사항
 
 - API 키, 사내 정보, 개인정보를 코드에 넣지 않는다.
-- 뉴스 본문 전체를 무단 복사하지 않는다. 기사 제목, 출처, 링크, 요약 형태로 표시한다.
-- 자동 수집 기능이 없는데 있는 것처럼 만들지 않는다.
-- 샘플 데이터와 실제 연동 예정 영역을 명확히 구분한다.
+- 뉴스 본문 전체를 무단 복사하지 않는다. 기사 제목, 출처, 링크, 요약 스니펫 형태로만 저장하고 표시한다.
+- 수집 스크립트는 RSS가 제공하는 요약 스니펫만 저장한다. 본문 전체는 저장하지 않는다.
+- 동작하지 않는 기능을 동작하는 것처럼 표시하지 않는다. 데이터 로드 실패 시 폴백 안내 배너로 사실대로 알린다.
 - 요청하지 않은 로그인, DB, 서버, 관리자 페이지를 만들지 않는다.
 - 다만 확장을 고려한 데이터 구조는 단순하게 준비한다.
 
 ## 8. 작업 절차
 
-1. 작업 시작 전 Plan을 작성한다.
-2. checklist.md를 생성하고 진행 상황을 체크한다.
-3. context-notes.md에 결정 사항과 이유를 누적한다.
+1. 작업 시작 전 docs/PLAN.md를 작성한다.
+2. docs/checklist.md를 생성하고 진행 상황을 체크한다.
+3. docs/context-notes.md에 결정 사항과 이유를 누적한다.
 4. 구현 전 성공 기준을 정의한다.
 5. 구현 후 브라우저에서 열 수 있는지 확인한다.
 6. npm이 없더라도 HTML, CSS, JS 문법 오류를 확인한다.
