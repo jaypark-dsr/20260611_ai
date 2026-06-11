@@ -6,11 +6,12 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const DATA_DIR = path.join(ROOT, "assets", "data");
+// backend/src/collect 기준으로 backend/data 를 가리킨다.
+const HERE = path.dirname(fileURLToPath(import.meta.url));
+const DATA_DIR = path.resolve(HERE, "..", "..", "data");
 const ARCHIVE_DIR = path.join(DATA_DIR, "archive");
 const NEWS_PATH = path.join(DATA_DIR, "news.json");
-const SOURCES_PATH = path.join(ROOT, "scripts", "rss-sources.json");
+const SOURCES_PATH = path.join(HERE, "rss-sources.json");
 
 const SUMMARY_MAX = 200;
 const SUMMARY_MIN = 25; // 이보다 짧은 요약은 빈약한 것으로 보고 제외한다.

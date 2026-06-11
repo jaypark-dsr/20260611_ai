@@ -1,4 +1,4 @@
-# RSS 피드를 매일 아침 자동 수집해 news.json과 아카이브를 갱신하고 커밋한다
+# RSS 피드를 매일 아침 자동 수집해 backend/data를 갱신하고 커밋한다
 name: Fetch news
 
 on:
@@ -22,18 +22,20 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Install dependencies
+      - name: Install backend dependencies
+        working-directory: backend
         run: npm install --no-audit --no-fund
 
       - name: Collect RSS feeds
-        run: node scripts/fetch-news.mjs
+        working-directory: backend
+        run: npm run fetch
 
       - name: Commit and push if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if [ -n "$(git status --porcelain assets/data)" ]; then
-            git add assets/data
+          if [ -n "$(git status --porcelain backend/data)" ]; then
+            git add backend/data
             git commit -m "chore: auto-collect news $(date -u +%Y-%m-%d)"
             git push
           else

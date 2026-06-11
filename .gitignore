@@ -1,4 +1,13 @@
-# RSS 수집 스크립트의 의존성. 사이트 런타임에는 포함되지 않는다.
+# 의존성
 node_modules/
+**/node_modules/
 npm-debug.log*
-package-lock.json
+
+# 빌드 산출물
+frontend/dist/
+backend/dist/
+
+# 로컬 환경
+.env
+.env.local
+.DS_Store
