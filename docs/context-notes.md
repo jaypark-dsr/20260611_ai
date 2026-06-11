@@ -82,8 +82,26 @@
 3. 루트 문서 난잡 — PLAN/checklist/context-notes를 docs/로 이동하고 참조 경로를 갱신했다.
 4. 폴백 안내 UI 부재 — 콘솔 경고만 있던 것을 화면 상단 안내 배너(#dataNotice)로 구현했다. fetch 실패 시 표시, 성공 시 숨김, 닫기 버튼 제공.
 
-## 남은 후속 과제 (4차 이후)
+## 4차 구현 결정 (2026-06-11) — 백엔드/프론트 분리 리팩토링
+
+### 배경
+- 사용자(PM)가 Vanilla JS 정적 사이트가 별로라며 React+Vite 프론트 + 실제 API 백엔드로 분리 리팩토링을 지시했다. CLAUDE.md "프레임워크 도입 금지" 원칙은 명시적 PM 결정으로 무효화하고, 그 사실을 CLAUDE.md에 기록했다.
+- 폴백 배너 혼란("페이징은 열리는데 샘플 화면")의 원인은 file:// 직접 열기였다. React+Vite 전환으로 이 문제 자체가 사라진다(dev는 Vite 서버, prod는 백엔드 서빙).
+
+### 아키텍처 결정
+- 모노레포로 frontend/(React+Vite+TS), backend/(Express+TS)를 분리했다.
+- 백엔드를 실제 API 서버로 택했다(사용자 선택). 데이터는 여전히 JSON 파일이지만 /api/news, /api/archive, /api/news/:date, /api/month/:month로 제공한다. 월별 병합은 서버에서 처리해 프론트를 단순화했다.
+- dev는 Vite 프록시(/api→3001), prod는 백엔드가 frontend/dist를 정적 서빙해 단일 서버로 배포 가능하게 했다. 백엔드 server.ts가 dist 존재 시 자동으로 정적 서빙을 켠다.
+- 수집 스크립트는 backend/src/collect로 이동하고 경로를 backend/data 기준으로 조정했다. 동작 검증된 .mjs는 그대로 두고(원칙: 멀쩡한 코드 재작성 금지) API 서버만 TS로 새로 작성했다.
+- 언어는 TypeScript(사용자 선택). 데이터 구조를 types.ts에 정의해 프론트·백엔드가 동일 형태를 공유한다. tsx는 런타임 타입체크를 하지 않으므로 별도로 tsc --noEmit로 검증한다.
+
+### 검증
+- backend `tsc --noEmit` 통과, 전 API 엔드포인트 응답 확인(news 90건, month 병합 90건, 잘못된 날짜 400).
+- frontend `tsc --noEmit` + `vite build` 통과(JS 157KB). dev 프록시(5174, 5173은 타 앱 점유)와 prod 단일 서버(SPA+API+SPA폴백 라우팅) 양쪽 동작 확인.
+
+## 남은 후속 과제 (5차 이후)
 - Slack/사내 포털로 오늘의 요약 자동 공유
 - 팀 학습 체크 현황 공유(현재 읽음·북마크는 개인 localStorage)
 - 클라우드·개발 한국어 소스 보강(현재 영문 비중 높음)
 - 카드 페이지네이션 또는 무한 스크롤(현재 전량 렌더링)
+- 배포 파이프라인(GitHub Actions로 빌드+배포) 구성

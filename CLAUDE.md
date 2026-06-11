@@ -21,23 +21,20 @@
 
 ## 2. 프로젝트 범위
 
-- 정적 웹사이트 형태의 뉴스 대시보드를 만든다.
-- 카테고리별 뉴스 카드, 오늘의 핵심 요약, 중요도 표시, 읽기 시간, 출처, 태그, 팀 학습 질문, 북마크, 읽음 표시, 일자별·월별 보기 영역을 제공한다.
-- 뉴스 데이터는 RSS 자동 수집(GitHub Actions + scripts/fetch-news.mjs)으로 매일 아침 갱신한다. 한국어 소스를 우선하며 주제 키워드로 카테고리를 재분류한다.
-- 데이터 파일(news.json)은 자동 수집이 기본이며 필요 시 수동 보정도 가능하다. fetch 실패 시 화면 폴백 안내 배너를 표시한다.
+- 백엔드(API)와 프론트엔드(SPA)를 분리한 모노레포 뉴스 대시보드를 만든다.
+- 프론트엔드는 카테고리 필터, 오늘의 핵심 요약, 중요도·읽기시간·출처·태그·언어 표시, 팀 학습 질문, 북마크, 읽음 표시, 기간 보기(최신·일자별·월별), 다크 모드를 제공한다.
+- 백엔드는 뉴스 데이터와 일자별·월별 아카이브를 REST API로 제공하고, RSS 자동 수집(GitHub Actions)으로 매일 아침 데이터를 갱신한다. 한국어 소스를 우선하며 주제 키워드로 카테고리를 재분류한다.
+- API 연결 실패 시 프론트엔드가 안내 배너를 표시한다.
 - 반응형 레이아웃, 접근성, 브라우저 호환성을 고려한다.
 
 ## 3. 주요 산출물
 
-- index.html
-- assets/css/styles.css
-- assets/js/app.js
-- assets/data/news.json, assets/data/archive/*.json (일자별 아카이브)
-- scripts/fetch-news.mjs, scripts/rss-sources.json (RSS 자동 수집)
+- frontend/ — React + Vite + TypeScript SPA (components, hooks, lib, styles.css)
+- backend/ — Express + TypeScript API 서버(server.ts), 공용 타입(types.ts)
+- backend/src/collect/ — RSS 수집 스크립트(fetch-news.mjs), 소스·분류 규칙(rss-sources.json)
+- backend/data/ — news.json, archive/*.json (일자별 스냅샷)
 - .github/workflows/fetch-news.yml (매일 자동 수집)
-- package.json (수집 전용 의존성 rss-parser)
-- README.md
-- CLAUDE.md
+- README.md, CLAUDE.md
 - docs/PLAN.md, docs/checklist.md, docs/context-notes.md (작업 산출물)
 - agents/*.md
 
@@ -47,52 +44,60 @@
 news-dashboard/
   CLAUDE.md
   README.md
-  package.json          수집 전용 의존성(rss-parser)
-  index.html
-  assets/
-    css/styles.css
-    js/app.js
+  frontend/                 React + Vite + TypeScript SPA
+    index.html
+    vite.config.ts          /api 를 백엔드(3001)로 프록시
+    package.json
+    src/
+      main.tsx, App.tsx
+      types.ts
+      lib/        api.ts, util.ts
+      hooks/      useTheme.ts, usePersistentSet.ts
+      components/ Header, SummaryCard, CategoryFilter, Toolbar,
+                  NewsGrid, NewsCard, LearningPanels, SourceList,
+                  Footer, DataNotice
+      styles.css
+  backend/                  Express + TypeScript API
+    package.json
+    tsconfig.json
+    src/
+      server.ts             /api/news, /api/archive, /api/news/:date, /api/month/:month
+      types.ts
+      collect/
+        fetch-news.mjs       RSS 수집 스크립트
+        rss-sources.json     RSS 피드와 분류 규칙
     data/
-      news.json         최신 수집 결과
-      archive/          일자별 스냅샷과 index.json
-    icons/
-  scripts/
-    fetch-news.mjs      RSS 수집 스크립트
-    rss-sources.json    카테고리별 RSS 피드와 분류 규칙
+      news.json              최신 수집 결과
+      archive/               일자별 스냅샷과 index.json
   .github/workflows/
-    fetch-news.yml      매일 아침 자동 수집
+    fetch-news.yml          매일 아침 자동 수집
   docs/
-    PLAN.md             구현 계획과 성공 기준
-    checklist.md        단계별 진행 체크리스트
-    context-notes.md    결정 사항과 가정 기록
+    PLAN.md, checklist.md, context-notes.md
   agents/
-    PM.md
-    reviewer.md
-    feedback.md
-    ui_ux_designer.md
-    component_developer.md
-    accessibility_responsive_reviewer.md
+    PM.md, reviewer.md, feedback.md, ui_ux_designer.md,
+    component_developer.md, accessibility_responsive_reviewer.md,
     browser_compatibility_tester.md
 ```
 
 ## 5. 기술 스택
 
-- HTML5
-- CSS3
-- Vanilla JavaScript (사이트 런타임은 무의존성, 빌드 도구 없이 브라우저에서 바로 열린다)
-- JSON 기반 데이터 (RSS 자동 수집 결과 + 필요 시 수동 보정)
-- Node.js + rss-parser + GitHub Actions (수집 파이프라인 전용. 사이트 런타임과 분리)
-- [추정] 추후 확장 시 서버리스 함수, Slack 연동, 검색 고도화 도입을 고려할 수 있다.
+- 프론트엔드 — React 18 + Vite + TypeScript. 컴포넌트 단위 SPA. 빌드는 `tsc --noEmit && vite build`.
+- 백엔드 — Express + TypeScript(tsx 실행). REST API와 프로덕션 정적 서빙.
+- 데이터 — JSON 파일(backend/data). RSS 자동 수집 결과가 기본이며 필요 시 수동 보정.
+- 수집 — Node.js + rss-parser + GitHub Actions.
+- 구동 — dev는 Vite(5173) + API(3001)를 함께 띄우고 `/api`를 프록시한다. prod는 백엔드 하나가 `/api`와 `frontend/dist`를 함께 서빙한다.
+
+> 참고. 1~3차는 Vanilla JS 정적 사이트였다. PM 결정으로 4차에서 React+Vite 프론트와 Express 백엔드 분리 구조로 리팩토링했다. 따라서 아래 "불필요한 프레임워크 도입 금지" 원칙은 React/Express 채택을 막지 않는다(명시적 의사결정).
 
 ## 6. 코딩 컨벤션
 
 - 한국어 문장은 콜론으로 끝내지 않는다. 마침표, 물음표, 느낌표로 끝낸다.
 - 새 소스 파일 첫 줄에는 한국어 역할 주석을 작성한다.
-- HTML, CSS, JavaScript는 읽기 쉬운 이름을 사용한다.
-- 불필요한 프레임워크를 도입하지 않는다.
-- CSS 클래스명은 의미 기반으로 작성한다.
-- JavaScript는 작은 함수 단위로 나누되 과도하게 추상화하지 않는다.
-- 접근성 속성 aria-label, alt, semantic tag를 적극 사용한다.
+- TypeScript 타입을 활용한다. 데이터 구조는 types.ts에 정의해 프론트·백엔드가 같은 형태를 공유한다.
+- 컴포넌트와 함수는 작은 단위로 나누되 과도하게 추상화하지 않는다.
+- CSS 클래스명은 의미 기반으로 작성한다. 전역 styles.css를 사용한다.
+- 합의된 스택(React, Express) 외의 불필요한 라이브러리는 추가하지 않는다.
+- 접근성 속성 aria-label, semantic tag를 적극 사용한다.
 
 ## 7. 금지사항과 주의사항
 
@@ -100,8 +105,8 @@ news-dashboard/
 - 뉴스 본문 전체를 무단 복사하지 않는다. 기사 제목, 출처, 링크, 요약 스니펫 형태로만 저장하고 표시한다.
 - 수집 스크립트는 RSS가 제공하는 요약 스니펫만 저장한다. 본문 전체는 저장하지 않는다.
 - 동작하지 않는 기능을 동작하는 것처럼 표시하지 않는다. 데이터 로드 실패 시 폴백 안내 배너로 사실대로 알린다.
-- 요청하지 않은 로그인, DB, 서버, 관리자 페이지를 만들지 않는다.
-- 다만 확장을 고려한 데이터 구조는 단순하게 준비한다.
+- 합의 범위를 넘는 로그인, DB, 관리자 페이지를 임의로 만들지 않는다.
+- 다만 확장을 고려한 데이터 구조와 API는 단순하게 준비한다.
 
 ## 8. 작업 절차
 
@@ -109,9 +114,9 @@ news-dashboard/
 2. docs/checklist.md를 생성하고 진행 상황을 체크한다.
 3. docs/context-notes.md에 결정 사항과 이유를 누적한다.
 4. 구현 전 성공 기준을 정의한다.
-5. 구현 후 브라우저에서 열 수 있는지 확인한다.
-6. npm이 없더라도 HTML, CSS, JS 문법 오류를 확인한다.
-7. 테스트 또는 최소 검증 후 의미 단위로 git commit을 수행한다.
+5. 완료 선언 전에 검증한다. 프론트는 `npm run build`(tsc 타입체크 포함), 백엔드는 `npx tsc --noEmit`로 타입을 확인하고 API 엔드포인트 응답을 점검한다.
+6. dev/prod 두 모드(Vite 프록시, 백엔드 단일 서빙)에서 동작을 확인한다.
+7. 검증 후 의미 단위로 git commit을 수행한다.
 8. 에러 발생 시 전체 로그를 읽고 원인을 기록한 뒤 수정한다.
 
 ## 9. MCP 구성 판단

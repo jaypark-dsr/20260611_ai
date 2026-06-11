@@ -59,3 +59,19 @@
 - [x] 다크 모드 토글 + localStorage + OS 설정 추종
 - [x] JS/JSON 문법 검증, 로컬 서버 200 응답 확인
 - [x] 의미 단위 커밋 및 푸시
+
+## 3차. 한국 RSS, 주제 재분류, 사이트 고도화
+- [x] 한국 언론사 RSS 실동작 검증 후 채택
+- [x] 출처 매핑 → 키워드 주제 재분류, 중요도 자동분류
+- [x] HTML 엔티티 디코드, 빈약 요약 제외, URL/제목 중복 제거
+- [x] 기간 보기(최신/일자/월), 중요/북마크/안읽음, 읽음 표시
+- [x] 다크모드 대비, focus-visible, XSS 방어
+- [x] 폴백 안내 배너, 문서 docs/ 이동
+
+## 4차. 백엔드/프론트 분리 리팩토링 (React+Vite+TS / Express+TS)
+- [x] backend: Express+TS API (/api/news, /api/archive, /api/news/:date, /api/month/:month)
+- [x] 수집 스크립트 backend/src/collect 이동 + 경로 조정
+- [x] frontend: Vite+React+TS, 컴포넌트/훅/타입 분리, styles.css 이식
+- [x] Vite 프록시(/api→3001), 프로덕션 단일 서버 정적 서빙
+- [x] backend tsc / frontend tsc+build 통과, dev·prod 양 모드 동작 확인
+- [x] 워크플로 경로 갱신(backend), 문서 전면 갱신, 커밋·푸시
