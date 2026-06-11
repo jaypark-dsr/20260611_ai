@@ -1,15 +1,14 @@
-// 뉴스 데이터를 불러와 렌더링하고 검색, 카테고리, 북마크, 아카이브, 다크 모드를 처리한다
+// 뉴스 데이터를 불러와 렌더링하고 기간(최신/일자/월), 검색, 카테고리, 중요·북마크·읽음 필터, 다크 모드를 처리한다
 
 (function () {
   "use strict";
 
   // fetch 실패 시(예: file://에서 직접 열어 로컬 JSON 로드가 차단된 경우) 사용할 최소 폴백 데이터.
-  // 실제 데이터는 assets/data/news.json을 편집하거나 RSS 자동 수집으로 갱신한다.
   var FALLBACK_DATA = {
-    meta: { lastUpdated: "데이터 미연결", editor: "전산팀", note: "폴백 데이터" },
+    meta: { lastUpdated: "데이터 미연결" },
     dailySummary: {
       date: "",
-      headline: "news.json을 불러오지 못해 폴백 데이터를 표시합니다. 로컬 서버로 열면 실제 데이터가 표시됩니다.",
+      headline: "데이터를 불러오지 못해 폴백 화면을 표시합니다. 로컬 서버로 열면 정상 동작합니다.",
       points: ["터미널에서 python -m http.server 8000 을 실행한 뒤 http://localhost:8000 을 여세요."]
     },
     categories: [
@@ -29,21 +28,30 @@
   };
 
   var IMPORTANCE_LABEL = { high: "중요", medium: "보통", low: "참고" };
-  var STORAGE = { bookmarks: "news-dashboard:bookmarks", theme: "news-dashboard:theme" };
+  var STORAGE = {
+    bookmarks: "news-dashboard:bookmarks",
+    read: "news-dashboard:read",
+    theme: "news-dashboard:theme"
+  };
 
   var state = {
     data: null,
     activeCategory: "all",
     searchQuery: "",
+    viewMode: "latest", // latest | day | month
     bookmarkOnly: false,
-    bookmarks: loadBookmarks()
+    importantOnly: false,
+    unreadOnly: false,
+    bookmarks: loadSet(STORAGE.bookmarks),
+    read: loadSet(STORAGE.read),
+    archiveDates: []
   };
 
-  // ---------- localStorage 유틸 ----------
+  // ---------- localStorage ----------
 
-  function loadBookmarks() {
+  function loadSet(key) {
     try {
-      var raw = window.localStorage.getItem(STORAGE.bookmarks);
+      var raw = window.localStorage.getItem(key);
       var arr = raw ? JSON.parse(raw) : [];
       return new Set(Array.isArray(arr) ? arr : []);
     } catch (e) {
@@ -51,14 +59,11 @@
     }
   }
 
-  function saveBookmarks() {
+  function saveSet(key, set) {
     try {
-      window.localStorage.setItem(
-        STORAGE.bookmarks,
-        JSON.stringify(Array.from(state.bookmarks))
-      );
+      window.localStorage.setItem(key, JSON.stringify(Array.from(set)));
     } catch (e) {
-      console.warn("북마크 저장 실패:", e.message);
+      console.warn("저장 실패:", e.message);
     }
   }
 
@@ -71,6 +76,11 @@
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#39;");
+  }
+
+  // http/https 링크만 허용해 javascript: 등 위험 스킴을 차단한다.
+  function safeUrl(url) {
+    return /^https?:\/\//i.test(String(url || "")) ? String(url) : "#";
   }
 
   function getCategoryLabel(id) {
@@ -138,16 +148,18 @@
 
   function renderFilter() {
     var container = document.getElementById("categoryFilter");
-    var usedCategories = state.data.news.map(function (n) {
-      return n.category;
+    var counts = {};
+    state.data.news.forEach(function (n) {
+      counts[n.category] = (counts[n.category] || 0) + 1;
     });
 
     container.innerHTML = (state.data.categories || [])
       .filter(function (c) {
-        return c.id === "all" || usedCategories.indexOf(c.id) !== -1;
+        return c.id === "all" || counts[c.id];
       })
       .map(function (c) {
         var pressed = c.id === state.activeCategory ? "true" : "false";
+        var n = c.id === "all" ? state.data.news.length : counts[c.id];
         return (
           '<button type="button" class="filter__btn" data-category="' +
           escapeHtml(c.id) +
@@ -155,7 +167,9 @@
           pressed +
           '">' +
           escapeHtml(c.emoji + " " + c.label) +
-          "</button>"
+          ' <span class="filter__count">' +
+          n +
+          "</span></button>"
         );
       })
       .join("");
@@ -169,14 +183,20 @@
     });
   }
 
-  // 카테고리, 검색어, 북마크 조건을 모두 AND로 결합해 필터링한다.
+  // 카테고리, 검색어, 중요·북마크·읽음 조건을 모두 AND로 결합한다.
   function getFilteredNews() {
     var query = state.searchQuery.trim().toLowerCase();
     return state.data.news.filter(function (n) {
       if (state.activeCategory !== "all" && n.category !== state.activeCategory) {
         return false;
       }
+      if (state.importantOnly && n.importance !== "high") {
+        return false;
+      }
       if (state.bookmarkOnly && !state.bookmarks.has(n.id)) {
+        return false;
+      }
+      if (state.unreadOnly && state.read.has(n.id)) {
         return false;
       }
       if (query) {
@@ -198,6 +218,7 @@
   function buildCard(item) {
     var importanceKey = item.importance || "low";
     var importanceLabel = IMPORTANCE_LABEL[importanceKey] || "참고";
+    var url = safeUrl(item.url);
 
     var tagsHtml = (item.tags || [])
       .map(function (tag) {
@@ -205,9 +226,12 @@
       })
       .join("");
 
-    var sampleBadge = item.isSample
-      ? '<span class="badge badge--sample">샘플</span>'
-      : "";
+    var langBadge =
+      item.lang === "ko"
+        ? '<span class="badge badge--ko">한국어</span>'
+        : item.lang === "en"
+        ? '<span class="badge badge--en">EN</span>'
+        : "";
 
     var learningHtml = item.learningQuestion
       ? '<div class="card__learning"><strong>학습 질문</strong>' +
@@ -221,14 +245,23 @@
       escapeHtml(item.id) +
       '" aria-pressed="' +
       (bookmarked ? "true" : "false") +
-      '" aria-label="' +
-      escapeHtml(item.title) +
-      ' 북마크">' +
+      '" aria-label="북마크 토글">' +
       (bookmarked ? "★" : "☆") +
       "</button>";
 
+    var cls =
+      "card card--" +
+      escapeHtml(importanceKey) +
+      (state.read.has(item.id) ? " is-read" : "");
+
     return (
-      '<article class="card">' +
+      '<article class="' +
+      cls +
+      '" data-id="' +
+      escapeHtml(item.id) +
+      '" data-url="' +
+      escapeHtml(url) +
+      '">' +
       '<div class="card__top">' +
       '<span class="card__category">' +
       escapeHtml(getCategoryLabel(item.category)) +
@@ -238,7 +271,7 @@
       '">' +
       escapeHtml(importanceLabel) +
       "</span>" +
-      sampleBadge +
+      langBadge +
       bookmarkBtn +
       "</div>" +
       '<h3 class="card__title">' +
@@ -256,10 +289,8 @@
       escapeHtml(String(item.readingTime || "?")) +
       "분</span>" +
       '<a class="card__link" href="' +
-      escapeHtml(item.url || "#") +
-      '" target="_blank" rel="noopener noreferrer" aria-label="' +
-      escapeHtml(item.title) +
-      ' 원문 보기">원문</a>' +
+      escapeHtml(url) +
+      '" target="_blank" rel="noopener noreferrer">원문 ↗</a>' +
       "</div>" +
       "</article>"
     );
@@ -271,7 +302,8 @@
     var countEl = document.getElementById("newsCount");
     var items = getFilteredNews();
 
-    countEl.textContent = "총 " + items.length + "건";
+    var total = state.data.news.length;
+    countEl.textContent = "총 " + items.length + "건" + (items.length !== total ? " / 전체 " + total + "건" : "");
 
     if (items.length === 0) {
       grid.innerHTML = "";
@@ -287,20 +319,56 @@
       .join("");
   }
 
-  // 북마크 버튼 클릭을 그리드 단위 이벤트 위임으로 처리한다.
-  function handleGridClick(event) {
-    var btn = event.target.closest(".card__bookmark");
-    if (!btn) {
+  function markRead(id, cardEl) {
+    if (!id || state.read.has(id)) {
       return;
     }
-    var id = btn.getAttribute("data-id");
-    if (state.bookmarks.has(id)) {
-      state.bookmarks.delete(id);
-    } else {
-      state.bookmarks.add(id);
+    state.read.add(id);
+    saveSet(STORAGE.read, state.read);
+    if (state.unreadOnly) {
+      renderNews();
+    } else if (cardEl) {
+      cardEl.classList.add("is-read");
     }
-    saveBookmarks();
-    renderNews();
+  }
+
+  // 카드 영역 클릭을 이벤트 위임으로 처리한다. 북마크 토글, 원문 이동, 읽음 표시.
+  function handleGridClick(event) {
+    var bm = event.target.closest(".card__bookmark");
+    if (bm) {
+      var bid = bm.getAttribute("data-id");
+      var nowOn;
+      if (state.bookmarks.has(bid)) {
+        state.bookmarks.delete(bid);
+        nowOn = false;
+      } else {
+        state.bookmarks.add(bid);
+        nowOn = true;
+      }
+      saveSet(STORAGE.bookmarks, state.bookmarks);
+      bm.textContent = nowOn ? "★" : "☆";
+      bm.setAttribute("aria-pressed", nowOn ? "true" : "false");
+      if (state.bookmarkOnly) {
+        renderNews();
+      }
+      return;
+    }
+
+    var card = event.target.closest(".card");
+    if (!card) {
+      return;
+    }
+    var id = card.getAttribute("data-id");
+    var url = card.getAttribute("data-url");
+    var link = event.target.closest("a");
+    if (link) {
+      markRead(id, card); // 원문 링크는 새 탭에서 열리고 읽음 처리만 한다.
+      return;
+    }
+    markRead(id, card);
+    if (url && url !== "#") {
+      window.open(url, "_blank", "noopener");
+    }
   }
 
   function fillList(elementId, items) {
@@ -318,22 +386,19 @@
   function renderRssSources() {
     document.getElementById("rssSources").innerHTML = (state.data.rssSources || [])
       .map(function (src) {
-        return (
-          "<li>" +
-          escapeHtml(src.name) +
-          " — " +
-          escapeHtml(src.status || "연동 예정") +
-          "</li>"
-        );
+        var flag = src.lang === "ko" ? "🇰🇷 " : src.lang === "en" ? "🌐 " : "";
+        return "<li>" + flag + escapeHtml(src.name) + "</li>";
       })
       .join("");
   }
 
   function renderFooter() {
-    var updated = state.data.meta && state.data.meta.lastUpdated;
-    document.getElementById("lastUpdated").textContent = updated
-      ? "마지막 갱신 " + updated
-      : "";
+    var meta = state.data.meta || {};
+    var txt = meta.lastUpdated ? "마지막 갱신 " + meta.lastUpdated : "";
+    if (meta.koCount && meta.total) {
+      txt += " · 한국어 " + meta.koCount + " / 전체 " + meta.total + "건";
+    }
+    document.getElementById("lastUpdated").textContent = txt;
   }
 
   function renderAll() {
@@ -348,7 +413,7 @@
     renderFooter();
   }
 
-  // ---------- 도구 모음(검색, 북마크, 아카이브) ----------
+  // ---------- 도구 모음 ----------
 
   function initToolbar() {
     var search = document.getElementById("searchInput");
@@ -357,78 +422,211 @@
       renderNews();
     });
 
-    var bookmarkToggle = document.getElementById("bookmarkToggle");
-    bookmarkToggle.addEventListener("click", function () {
-      state.bookmarkOnly = !state.bookmarkOnly;
-      bookmarkToggle.setAttribute("aria-pressed", state.bookmarkOnly ? "true" : "false");
-      bookmarkToggle.classList.toggle("is-active", state.bookmarkOnly);
-      renderNews();
+    bindToggle("importantToggle", "importantOnly");
+    bindToggle("bookmarkToggle", "bookmarkOnly");
+    bindToggle("unreadToggle", "unreadOnly");
+
+    // 기간 모드 세그먼트
+    document.querySelectorAll(".segmented__btn").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.getAttribute("data-mode");
+        if (mode === state.viewMode) {
+          return;
+        }
+        state.viewMode = mode;
+        document.querySelectorAll(".segmented__btn").forEach(function (b) {
+          b.setAttribute("aria-pressed", b === btn ? "true" : "false");
+        });
+        setupPeriodControl();
+      });
     });
 
-    var archiveSelect = document.getElementById("archiveSelect");
-    archiveSelect.addEventListener("change", function () {
-      loadData(archiveSelect.value);
+    document.getElementById("periodSelect").addEventListener("change", function () {
+      loadByPeriod(this.value);
     });
 
     document.getElementById("newsGrid").addEventListener("click", handleGridClick);
+
+    var noticeClose = document.getElementById("noticeClose");
+    if (noticeClose) {
+      noticeClose.addEventListener("click", function () {
+        showDataNotice(false);
+      });
+    }
   }
 
-  // 아카이브 인덱스를 불러와 날짜 셀렉트를 채운다. 없으면 조용히 넘어간다.
-  function initArchive() {
-    fetch("assets/data/archive/index.json", { cache: "no-store" })
-      .then(function (res) {
-        if (!res.ok) {
-          throw new Error("HTTP " + res.status);
+  function bindToggle(btnId, stateKey) {
+    var btn = document.getElementById(btnId);
+    btn.addEventListener("click", function () {
+      state[stateKey] = !state[stateKey];
+      btn.setAttribute("aria-pressed", state[stateKey] ? "true" : "false");
+      btn.classList.toggle("is-active", state[stateKey]);
+      renderNews();
+    });
+  }
+
+  // 기간 모드에 맞게 셀렉트를 채우고 첫 항목을 로드한다.
+  function setupPeriodControl() {
+    var field = document.getElementById("periodField");
+    var select = document.getElementById("periodSelect");
+    var label = document.getElementById("periodLabel");
+
+    if (state.viewMode === "latest") {
+      field.hidden = true;
+      loadByPeriod("");
+      return;
+    }
+
+    field.hidden = false;
+    if (state.viewMode === "day") {
+      label.textContent = "날짜";
+      select.innerHTML = state.archiveDates
+        .map(function (d) {
+          return '<option value="' + d + '">' + d + "</option>";
+        })
+        .join("");
+    } else {
+      label.textContent = "월";
+      var months = [];
+      state.archiveDates.forEach(function (d) {
+        var m = d.slice(0, 7);
+        if (months.indexOf(m) === -1) {
+          months.push(m);
         }
-        return res.json();
-      })
-      .then(function (index) {
-        var select = document.getElementById("archiveSelect");
-        (index.dates || []).forEach(function (date) {
-          var opt = document.createElement("option");
-          opt.value = date;
-          opt.textContent = date;
-          select.appendChild(opt);
-        });
-      })
-      .catch(function (error) {
-        console.info("아카이브 인덱스 없음(최신만 표시):", error.message);
       });
+      select.innerHTML = months
+        .map(function (m) {
+          return '<option value="' + m + '">' + m + "</option>";
+        })
+        .join("");
+    }
+
+    if (select.options.length > 0) {
+      loadByPeriod(select.value);
+    } else {
+      document.getElementById("newsGrid").innerHTML = "";
+      document.getElementById("emptyState").hidden = false;
+    }
   }
 
   // ---------- 데이터 로드 ----------
 
-  // date가 비어 있으면 최신(news.json), 값이 있으면 해당 날짜 아카이브를 불러온다.
-  function loadData(date) {
-    var url = date
-      ? "assets/data/archive/" + encodeURIComponent(date) + ".json"
-      : "assets/data/news.json";
+  // 데이터 로드 실패 시 화면 상단 안내 배너를 보이거나 숨긴다.
+  function showDataNotice(visible) {
+    var el = document.getElementById("dataNotice");
+    if (el) {
+      el.hidden = !visible;
+    }
+  }
 
-    fetch(url, { cache: "no-store" })
-      .then(function (response) {
-        if (!response.ok) {
-          throw new Error("HTTP " + response.status);
-        }
-        return response.json();
-      })
+  function fetchJson(url) {
+    return fetch(url, { cache: "no-store" }).then(function (res) {
+      if (!res.ok) {
+        throw new Error("HTTP " + res.status);
+      }
+      return res.json();
+    });
+  }
+
+  // 기간 모드에 따라 최신/특정일/특정월 데이터를 불러온다.
+  function loadByPeriod(value) {
+    if (state.viewMode === "month" && value) {
+      loadMonth(value);
+      return;
+    }
+    var url = value
+      ? "assets/data/archive/" + encodeURIComponent(value) + ".json"
+      : "assets/data/news.json";
+    fetchJson(url)
       .then(function (data) {
+        showDataNotice(false);
         state.data = data;
         renderAll();
       })
       .catch(function (error) {
-        console.warn(
-          "데이터를 불러오지 못했습니다. 로컬 서버로 열면 정상 동작합니다. 원인:",
-          error.message
-        );
+        console.warn("데이터 로드 실패:", error.message);
+        showDataNotice(true);
         state.data = FALLBACK_DATA;
         renderAll();
+      });
+  }
+
+  // 한 달치 아카이브를 모두 불러와 합치고 중복(id)을 제거해 보여준다.
+  function loadMonth(month) {
+    var dates = state.archiveDates.filter(function (d) {
+      return d.indexOf(month) === 0;
+    });
+    Promise.all(
+      dates.map(function (d) {
+        return fetchJson("assets/data/archive/" + d + ".json").catch(function () {
+          return null;
+        });
+      })
+    ).then(function (results) {
+      var valid = results.filter(Boolean);
+      if (valid.length === 0) {
+        showDataNotice(true);
+        state.data = FALLBACK_DATA;
+        renderAll();
+        return;
+      }
+      showDataNotice(false);
+      var seen = {};
+      var merged = [];
+      valid.forEach(function (d) {
+        (d.news || []).forEach(function (n) {
+          if (!seen[n.id]) {
+            seen[n.id] = true;
+            merged.push(n);
+          }
+        });
+      });
+      var base = valid[0]; // 가장 최근 날짜의 패널을 재사용한다.
+      var highs = merged.filter(function (n) {
+        return n.importance === "high";
+      }).length;
+      state.data = {
+        meta: { lastUpdated: month, total: merged.length },
+        dailySummary: {
+          date: month,
+          headline:
+            month +
+            " 한 달 동안 " +
+            dates.length +
+            "일치 " +
+            merged.length +
+            "건을 모았습니다" +
+            (highs ? " (중요 " + highs + "건)." : "."),
+          points: []
+        },
+        categories: base.categories,
+        news: merged,
+        teamLearningQuestions: base.teamLearningQuestions,
+        discussionTopics: base.discussionTopics,
+        recommendedRoutine: base.recommendedRoutine,
+        rssSources: base.rssSources
+      };
+      renderAll();
+    });
+  }
+
+  // 아카이브 인덱스를 불러와 기간 셀렉트의 기반 데이터를 만든다.
+  function initArchive() {
+    return fetchJson("assets/data/archive/index.json")
+      .then(function (index) {
+        state.archiveDates = Array.isArray(index.dates) ? index.dates : [];
+      })
+      .catch(function (error) {
+        console.info("아카이브 인덱스 없음(최신만 표시):", error.message);
+        state.archiveDates = [];
       });
   }
 
   document.addEventListener("DOMContentLoaded", function () {
     initTheme();
     initToolbar();
-    initArchive();
-    loadData("");
+    initArchive().then(function () {
+      loadByPeriod(""); // 최초에는 최신 데이터를 보여준다.
+    });
   });
 })();

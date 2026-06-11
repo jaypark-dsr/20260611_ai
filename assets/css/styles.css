@@ -161,6 +161,44 @@ main > .learning-area {
   margin-bottom: 32px;
 }
 
+/* 데이터 로드 실패 안내 배너 */
+.notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--color-high-bg);
+  border: 1px solid var(--color-high);
+  color: var(--color-text);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 24px;
+}
+.notice__icon {
+  font-size: 1.2rem;
+  line-height: 1.4;
+}
+.notice__body {
+  flex: 1;
+  font-size: 0.92rem;
+}
+.notice__body code {
+  background: rgba(0, 0, 0, 0.08);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+[data-theme="dark"] .notice__body code {
+  background: rgba(255, 255, 255, 0.12);
+}
+.notice__close {
+  font: inherit;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  padding: 2px 6px;
+}
+
 /* 오늘의 핵심 요약 */
 .summary {
   background: var(--color-surface);
@@ -210,7 +248,7 @@ main > .learning-area {
   color: #fff;
 }
 
-/* 도구 모음 (검색, 아카이브, 북마크) */
+/* 도구 모음 (기간, 검색, 필터) */
 .toolbar {
   display: flex;
   align-items: flex-end;
@@ -227,8 +265,8 @@ main > .learning-area {
   flex-direction: column;
   gap: 4px;
 }
-.toolbar__field:first-child {
-  flex: 1 1 220px;
+.toolbar__field--search {
+  flex: 1 1 200px;
 }
 .toolbar__label {
   font-size: 0.78rem;
@@ -247,20 +285,50 @@ main > .learning-area {
 .toolbar__search {
   width: 100%;
 }
-.toolbar__bookmark {
+
+/* 기간 모드 세그먼트 */
+.segmented {
+  display: inline-flex;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 3px;
+}
+.segmented__btn {
+  font: inherit;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  border-radius: 999px;
+  padding: 6px 14px;
+}
+.segmented__btn[aria-pressed="true"] {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+/* 필터 토글 버튼 */
+.toolbar__toggles {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+.toolbar__toggle {
   font: inherit;
   cursor: pointer;
   color: var(--color-text);
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: 999px;
-  padding: 9px 16px;
+  padding: 9px 14px;
 }
-.toolbar__bookmark:hover {
+.toolbar__toggle:hover {
   border-color: var(--color-primary);
   color: var(--color-primary);
 }
-.toolbar__bookmark.is-active {
+.toolbar__toggle.is-active {
   background: var(--color-primary);
   border-color: var(--color-primary);
   color: #fff;
@@ -337,6 +405,52 @@ main > .learning-area {
 }
 .card__bookmark:hover {
   color: #f0a92b;
+}
+
+/* 언어 배지 */
+.badge--ko {
+  color: #1f6f43;
+  background: #e2f5ea;
+}
+.badge--en {
+  color: #5a6679;
+  background: #eef1f6;
+}
+[data-theme="dark"] .badge--ko {
+  color: #8fe0b0;
+  background: #1d3329;
+}
+[data-theme="dark"] .badge--en {
+  color: #aeb9cb;
+  background: #262d3b;
+}
+
+/* 중요도에 따른 카드 좌측 강조 */
+.card {
+  border-left: 4px solid transparent;
+}
+.card--high {
+  border-left-color: var(--color-high);
+}
+.card--low {
+  opacity: 0.92;
+}
+
+/* 읽은 카드는 흐리게 처리해 새 소식과 구분한다 */
+.card.is-read {
+  opacity: 0.55;
+}
+.card.is-read:hover {
+  opacity: 0.85;
+}
+.card {
+  cursor: pointer;
+}
+
+/* 카테고리 필터 건수 */
+.filter__count {
+  font-size: 0.78rem;
+  opacity: 0.75;
 }
 
 .card__title {
@@ -479,9 +593,25 @@ main > .learning-area {
 
 /* 키보드 포커스 표시 */
 a:focus-visible,
-button:focus-visible {
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
   outline: 3px solid #ffbf47;
   outline-offset: 2px;
+}
+
+/* 다크 모드에서 활성 버튼 명도 대비 보강 (밝은 파랑+흰색은 대비 부족) */
+[data-theme="dark"] .filter__btn[aria-pressed="true"],
+[data-theme="dark"] .segmented__btn[aria-pressed="true"],
+[data-theme="dark"] .toolbar__toggle.is-active {
+  background: #2f4ea8;
+  border-color: #2f4ea8;
+  color: #ffffff;
+}
+
+/* 다크 모드 푸터 */
+[data-theme="dark"] .site-footer {
+  background: #0d1119;
 }
 
 /* 반응형 보강 */
