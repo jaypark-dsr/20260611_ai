@@ -1,18 +1,45 @@
 {
-  "note": "수집 대상 RSS 피드 목록이다. 카테고리별로 자유롭게 추가/삭제한다. 피드가 차단되거나 이전되면 수집 스크립트가 해당 피드만 건너뛴다. perFeedLimit는 피드당 가져올 최대 기사 수다.",
-  "perFeedLimit": 5,
+  "note": "수집 대상 RSS 피드와 분류 규칙이다. category는 분류 힌트(기본값)이며, 실제 카테고리는 keywords 규칙으로 제목·요약을 스캔해 재분류한다. requireKeyword=true인 종합지 피드는 키워드가 하나도 안 걸리면 제외해 노이즈를 막는다. 피드가 차단/이전되면 해당 피드만 건너뛴다.",
+  "perFeedLimit": 6,
+  "categoryPriority": ["security", "cloud", "dev", "economy", "ai", "it"],
+  "keywords": {
+    "security": ["보안", "해킹", "취약점", "유출", "침해", "랜섬", "피싱", "악성코드", "디도스", "개인정보", "백도어", "스미싱", "사이버", "CVE", "breach", "vulnerability", "ransomware", "malware", "phishing", "exploit", "zero-day", "ddos", "security", "hack"],
+    "ai": ["인공지능", "머신러닝", "딥러닝", "생성형", "챗봇", "거대언어", "신경망", "ai모델", "ai 모델", "ai 에이전트", "language model", "machine learning", "deep learning", "neural network", "chatbot", "copilot", "anthropic", "openai", "gemini", "gpt-", "llm"],
+    "cloud": ["클라우드", "쿠버네티스", "컨테이너", "서버리스", "데이터센터", "온프레미스", "하이브리드클라우드", "AWS", "애저", "GCP", "cloud", "kubernetes", "container", "serverless", "azure", "datacenter"],
+    "dev": ["개발자", "오픈소스", "깃허브", "프로그래밍", "프레임워크", "라이브러리", "소스코드", "리팩터", "디버깅", "자바스크립트", "파이썬", "러스트", "open source", "github", "framework", "developer", "programming", "kubernetes", "api", "compiler", "runtime"],
+    "economy": ["경제", "증시", "코스피", "코스닥", "금리", "환율", "주가", "투자", "반도체", "수출", "무역", "인플레이션", "물가", "부동산", "실적", "매출", "상장", "펀드", "economy", "market", "inflation", "stocks", "trade", "gdp", "earnings", "nasdaq"],
+    "it": ["스마트폰", "통신", "테크", "디지털", "전자", "반도체", "갤럭시", "아이폰", "가전", "플랫폼", "tech", "gadget", "device", "chip", "hardware", "software"]
+  },
+  "importanceKeywords": {
+    "high": ["취약점", "제로데이", "유출", "침해", "랜섬", "긴급", "보안 패치", "대란", "장애", "해킹", "과징금", "리콜", "CVE", "zero-day", "critical", "breach", "ransomware", "exploit", "outage", "emergency", "recall", "RCE"],
+    "low": ["출시", "리뷰", "루머", "할인", "팁", "가이드", "정리", "추천", "이벤트", "review", "rumor", "deal", "guide", "how-to", "tips", "roundup", "unboxing"]
+  },
+  "learningQuestions": {
+    "ai": "이 AI 기술이나 사례를 우리 업무 자동화에 적용한다면 어디부터 시작할 수 있을까?",
+    "security": "우리 시스템에도 같은 취약점이나 위험이 있는지 어떻게 점검할 수 있을까?",
+    "cloud": "이 클라우드 변화가 우리 인프라 비용과 구성에 어떤 영향을 줄까?",
+    "dev": "이 개발 트렌드를 우리 코드베이스나 개발 프로세스에 어떻게 반영할 수 있을까?",
+    "economy": "이 경제 흐름이 우리 IT 예산과 투자 우선순위에 어떤 신호를 주는가?",
+    "it": "이 기술 동향에서 우리 전산팀이 먼저 주목해야 할 포인트는 무엇인가?"
+  },
   "feeds": [
-    { "category": "it", "name": "The Verge", "url": "https://www.theverge.com/rss/index.xml" },
-    { "category": "it", "name": "Ars Technica", "url": "https://feeds.arstechnica.com/arstechnica/index" },
-    { "category": "ai", "name": "OpenAI Blog", "url": "https://openai.com/blog/rss.xml" },
-    { "category": "ai", "name": "MIT Technology Review", "url": "https://www.technologyreview.com/feed/" },
-    { "category": "security", "name": "BleepingComputer", "url": "https://www.bleepingcomputer.com/feed/" },
-    { "category": "security", "name": "The Hacker News", "url": "https://feeds.feedburner.com/TheHackersNews" },
-    { "category": "cloud", "name": "AWS News Blog", "url": "https://aws.amazon.com/blogs/aws/feed/" },
-    { "category": "cloud", "name": "Google Cloud Blog", "url": "https://cloudblog.withgoogle.com/rss/" },
-    { "category": "dev", "name": "Hacker News", "url": "https://news.ycombinator.com/rss" },
-    { "category": "dev", "name": "Dev.to", "url": "https://dev.to/feed" },
-    { "category": "economy", "name": "Investing.com News", "url": "https://www.investing.com/rss/news.rss" },
-    { "category": "economy", "name": "CNBC Finance", "url": "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10000664" }
+    { "category": "it", "name": "전자신문 IT", "url": "https://rss.etnews.com/Section902.xml", "lang": "ko" },
+    { "category": "it", "name": "아이뉴스24 IT", "url": "https://www.inews24.com/rss/news_it.xml", "lang": "ko" },
+    { "category": "it", "name": "지디넷코리아", "url": "https://feeds.feedburner.com/zdkorea", "lang": "ko" },
+    { "category": "it", "name": "The Verge", "url": "https://www.theverge.com/rss/index.xml", "lang": "en" },
+    { "category": "it", "name": "Ars Technica", "url": "https://feeds.arstechnica.com/arstechnica/index", "lang": "en" },
+    { "category": "ai", "name": "AI타임스", "url": "https://www.aitimes.com/rss/allArticle.xml", "lang": "ko" },
+    { "category": "ai", "name": "OpenAI Blog", "url": "https://openai.com/blog/rss.xml", "lang": "en" },
+    { "category": "ai", "name": "MIT Technology Review", "url": "https://www.technologyreview.com/feed/", "lang": "en" },
+    { "category": "security", "name": "데일리시큐", "url": "https://www.dailysecu.com/rss/allArticle.xml", "lang": "ko" },
+    { "category": "security", "name": "BleepingComputer", "url": "https://www.bleepingcomputer.com/feed/", "lang": "en" },
+    { "category": "security", "name": "The Hacker News", "url": "https://feeds.feedburner.com/TheHackersNews", "lang": "en" },
+    { "category": "cloud", "name": "AWS News Blog", "url": "https://aws.amazon.com/blogs/aws/feed/", "lang": "en" },
+    { "category": "cloud", "name": "Google Cloud Blog", "url": "https://cloudblog.withgoogle.com/rss/", "lang": "en" },
+    { "category": "dev", "name": "GeekNews", "url": "https://news.hada.io/rss/news", "lang": "ko" },
+    { "category": "dev", "name": "바이라인네트워크", "url": "https://byline.network/feed/", "lang": "ko", "requireKeyword": true },
+    { "category": "economy", "name": "연합뉴스 경제", "url": "https://www.yna.co.kr/rss/economy.xml", "lang": "ko", "requireKeyword": true },
+    { "category": "economy", "name": "한국경제 IT", "url": "https://www.hankyung.com/feed/it", "lang": "ko", "requireKeyword": true },
+    { "category": "economy", "name": "매일경제 IT과학", "url": "https://www.mk.co.kr/rss/50300009/", "lang": "ko", "requireKeyword": true }
   ]
 }
