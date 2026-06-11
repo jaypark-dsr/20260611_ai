@@ -1,0 +1,18 @@
+{
+  "note": "수집 대상 RSS 피드 목록이다. 카테고리별로 자유롭게 추가/삭제한다. 피드가 차단되거나 이전되면 수집 스크립트가 해당 피드만 건너뛴다. perFeedLimit는 피드당 가져올 최대 기사 수다.",
+  "perFeedLimit": 5,
+  "feeds": [
+    { "category": "it", "name": "The Verge", "url": "https://www.theverge.com/rss/index.xml" },
+    { "category": "it", "name": "Ars Technica", "url": "https://feeds.arstechnica.com/arstechnica/index" },
+    { "category": "ai", "name": "OpenAI Blog", "url": "https://openai.com/blog/rss.xml" },
+    { "category": "ai", "name": "MIT Technology Review", "url": "https://www.technologyreview.com/feed/" },
+    { "category": "security", "name": "BleepingComputer", "url": "https://www.bleepingcomputer.com/feed/" },
+    { "category": "security", "name": "The Hacker News", "url": "https://feeds.feedburner.com/TheHackersNews" },
+    { "category": "cloud", "name": "AWS News Blog", "url": "https://aws.amazon.com/blogs/aws/feed/" },
+    { "category": "cloud", "name": "Google Cloud Blog", "url": "https://cloudblog.withgoogle.com/rss/" },
+    { "category": "dev", "name": "Hacker News", "url": "https://news.ycombinator.com/rss" },
+    { "category": "dev", "name": "Dev.to", "url": "https://dev.to/feed" },
+    { "category": "economy", "name": "Investing.com News", "url": "https://www.investing.com/rss/news.rss" },
+    { "category": "economy", "name": "CNBC Finance", "url": "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10000664" }
+  ]
+}

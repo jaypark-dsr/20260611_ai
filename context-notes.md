@@ -35,12 +35,32 @@
 - CSS 변수, Grid, Flexbox, `:focus-visible` 등 Chrome/Edge/Safari에서 폭넓게 지원되는 기능만 사용한다.
 - JS는 ES6(템플릿 리터럴, const/let, 화살표 함수, fetch, async/await)까지만 사용하고 최신 실험적 문법은 피한다.
 
-## 후속 과제 후보 (다음 버전)
+## 2차 구현 결정 (2026-06-11) — RSS 수집, 북마크, 검색, 아카이브, 다크모드
 
-- RSS 자동 수집 (서버리스 함수 또는 GitHub Actions + RSS Parser)
-- 북마크/즐겨찾기 로컬 저장 (localStorage)
-- 키워드 검색과 태그 기반 필터 강화
-- 일자별 아카이브 보기
-- 다크 모드 토글
+### RSS 자동 수집 방식
+- 서버리스 대신 GitHub Actions를 택했다. 레포가 이미 GitHub에 있고 정적 사이트 모델과 맞으며 별도 인프라가 필요 없기 때문이다.
+- 수집 스크립트는 `scripts/fetch-news.mjs`이며 `rss-parser`를 사용한다. 이 의존성은 CI 수집 전용이고 사이트 런타임은 여전히 무의존성이다. node_modules는 .gitignore에 둔다.
+- 워크플로 `.github/workflows/fetch-news.yml`는 매일 아침(UTC 22:00 = KST 07:00)과 수동 실행으로 동작한다. 스크립트 실행 후 변경이 있으면 자동 커밋/푸시한다.
+- 수집 소스는 `scripts/rss-sources.json`에 카테고리별로 둔다. 실제 공개 RSS 피드를 기본값으로 넣었으며 사용자가 자유롭게 편집한다. 일부 피드는 차단/이전될 수 있으므로 스크립트는 피드 단위 실패를 무시하고 계속 진행하며 로그를 남긴다.
+- 저작권 준수를 위해 스크립트는 제목, 출처, 링크와 RSS가 제공하는 요약 스니펫(길이 제한)만 저장한다. 본문 전체는 저장하지 않는다. importance는 기본 medium, isSample은 false로 둔다.
+- 사람이 큐레이션한 필드(dailySummary, teamLearningQuestions, discussionTopics, recommendedRoutine)는 스크립트가 보존한다. 스크립트는 기존 news.json을 읽어 `news` 배열만 교체하고 나머지는 유지한다.
+
+### 일자별 아카이브
+- 수집 시 `assets/data/news.json`(최신)과 `assets/data/archive/{YYYY-MM-DD}.json`(스냅샷)을 함께 쓴다.
+- `assets/data/archive/index.json`에 사용 가능한 날짜 목록을 최신순으로 유지한다.
+- 프런트엔드는 아카이브 셀렉트로 과거 날짜를 골라 해당 스냅샷을 불러온다. 기본은 최신(news.json)이다.
+
+### 북마크
+- 카드마다 별 버튼을 두고 localStorage 키 `news-dashboard:bookmarks`에 id 배열을 저장한다. id 기준이라 날짜가 바뀌어도 유지된다.
+- "북마크만 보기" 토글로 저장한 항목만 필터링한다.
+
+### 키워드 검색
+- 검색 입력으로 제목, 요약, 태그를 부분 일치 필터링한다. 카테고리/북마크 필터와 AND로 결합한다.
+
+### 다크 모드
+- 헤더 토글 버튼, localStorage 키 `news-dashboard:theme`. `<html data-theme="dark">`로 CSS 변수 오버라이드한다. 최초 방문 시 OS 설정(prefers-color-scheme)을 따른다.
+
+## 남은 후속 과제 (3차 이후)
 - Slack/사내 포털로 오늘의 요약 자동 공유
 - 읽음 표시와 팀 학습 체크 현황
+- 수집 항목 자동 중요도 분류, 중복 제거 고도화
