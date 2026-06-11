@@ -1,0 +1,204 @@
+{
+  "meta": {
+    "lastUpdated": "2026-06-11",
+    "editor": "전산팀",
+    "note": "수동 편집 가능한 샘플 데이터다. 실제 API 연동 전까지 이 파일을 직접 수정한다. 뉴스 본문 전체를 복사하지 말고 제목, 출처, 원문 링크, 요약 형태로만 작성한다."
+  },
+  "dailySummary": {
+    "date": "2026-06-11",
+    "headline": "오늘은 사내 시스템 운영에 직접 영향을 주는 보안 패치와 AI 코딩 도구 동향에 주목한다.",
+    "points": [
+      "주요 오픈소스 라이브러리 보안 패치가 공개되어 사내 의존성 점검이 필요하다.",
+      "AI 코딩 어시스턴트가 사내 개발 생산성 논의의 핵심 주제로 떠오르고 있다.",
+      "클라우드 비용 최적화와 환율 변동이 IT 예산 계획에 영향을 준다."
+    ]
+  },
+  "categories": [
+    { "id": "all", "label": "전체", "emoji": "🗂️" },
+    { "id": "it", "label": "IT", "emoji": "💻" },
+    { "id": "ai", "label": "AI", "emoji": "🤖" },
+    { "id": "security", "label": "보안", "emoji": "🔒" },
+    { "id": "cloud", "label": "클라우드", "emoji": "☁️" },
+    { "id": "dev", "label": "개발", "emoji": "🛠️" },
+    { "id": "economy", "label": "경제", "emoji": "📈" }
+  ],
+  "news": [
+    {
+      "id": "it-001",
+      "category": "it",
+      "title": "기업용 협업 도구 시장, 통합형 플랫폼으로 재편 가속",
+      "summary": "메신저, 문서, 일정, 화상회의를 하나로 묶은 통합형 협업 플랫폼 경쟁이 심화되고 있다. 전산팀은 사내 도구 통합 시 데이터 이관과 권한 정책을 함께 검토할 필요가 있다.",
+      "source": "샘플 출처",
+      "url": "https://example.com/it-001",
+      "importance": "medium",
+      "readingTime": 4,
+      "tags": ["협업도구", "플랫폼", "사내시스템"],
+      "publishedAt": "2026-06-11",
+      "learningQuestion": "우리 팀의 협업 도구를 하나로 통합한다면 가장 먼저 정리해야 할 데이터와 권한은 무엇인가?",
+      "isSample": true
+    },
+    {
+      "id": "ai-001",
+      "category": "ai",
+      "title": "AI 코딩 어시스턴트, 사내 개발 표준에 통합되는 흐름",
+      "summary": "코드 생성과 리뷰를 돕는 AI 어시스턴트가 개발 표준 프로세스에 편입되고 있다. 도입 시 보안 검토와 코드 품질 게이트를 함께 설계하는 것이 권장된다.",
+      "source": "샘플 출처",
+      "url": "https://example.com/ai-001",
+      "importance": "high",
+      "readingTime": 6,
+      "tags": ["AI코딩", "생산성", "개발표준"],
+      "publishedAt": "2026-06-11",
+      "learningQuestion": "AI 코딩 도구를 사내에 도입할 때 코드 품질과 보안을 동시에 지키려면 어떤 게이트가 필요한가?",
+      "isSample": true
+    },
+    {
+      "id": "ai-002",
+      "category": "ai",
+      "title": "사내 문서 검색에 RAG 적용 사례 증가",
+      "summary": "검색 증강 생성(RAG)을 사내 지식베이스에 적용해 문서 검색 품질을 높이는 사례가 늘고 있다. 데이터 품질과 접근 권한 설계가 성패를 가른다.",
+      "source": "샘플 출처",
+      "url": "https://example.com/ai-002",
+      "importance": "medium",
+      "readingTime": 5,
+      "tags": ["RAG", "검색", "지식관리"],
+      "publishedAt": "2026-06-11",
+      "learningQuestion": "우리 사내 문서에 RAG를 적용한다면 어떤 문서부터 색인하는 것이 효과적일까?",
+      "isSample": true
+    },
+    {
+      "id": "sec-001",
+      "category": "security",
+      "title": "주요 오픈소스 라이브러리 긴급 보안 패치 공개",
+      "summary": "널리 쓰이는 오픈소스 라이브러리에서 원격 코드 실행 취약점이 보고되어 긴급 패치가 공개됐다. 사내 의존성 목록을 점검하고 영향 범위를 확인해야 한다.",
+      "source": "샘플 출처",
+      "url": "https://example.com/sec-001",
+      "importance": "high",
+      "readingTime": 3,
+      "tags": ["취약점", "패치", "의존성관리"],
+      "publishedAt": "2026-06-11",
+      "learningQuestion": "우리 시스템이 이 라이브러리를 사용 중인지 어떻게 빠르게 확인할 수 있는가?",
+      "isSample": true
+    },
+    {
+      "id": "sec-002",
+      "category": "security",
+      "title": "피싱 메일 정교화, 사내 보안 교육 강화 권고",
+      "summary": "AI로 생성된 정교한 피싱 메일이 늘어 임직원 대상 보안 인식 교육의 중요성이 커지고 있다. 정기 모의훈련과 신고 절차 정비가 권장된다.",
+      "source": "샘플 출처",
+      "url": "https://example.com/sec-002",
+      "importance": "medium",
+      "readingTime": 4,
+      "tags": ["피싱", "보안교육", "모의훈련"],
+      "publishedAt": "2026-06-11",
+      "learningQuestion": "사내 피싱 모의훈련의 효과를 측정하려면 어떤 지표를 봐야 하는가?",
+      "isSample": true
+    },
+    {
+      "id": "cloud-001",
+      "category": "cloud",
+      "title": "클라우드 비용 최적화, FinOps 도입 확산",
+      "summary": "클라우드 지출을 관리하는 FinOps 문화가 IT 조직에 빠르게 자리잡고 있다. 미사용 리소스 정리와 예약 인스턴스 활용이 핵심 절감 포인트로 꼽힌다.",
+      "source": "샘플 출처",
+      "url": "https://example.com/cloud-001",
+      "importance": "medium",
+      "readingTime": 5,
+      "tags": ["FinOps", "비용최적화", "클라우드"],
+      "publishedAt": "2026-06-11",
+      "learningQuestion": "우리 클라우드 비용에서 가장 먼저 줄일 수 있는 미사용 리소스는 무엇일까?",
+      "isSample": true
+    },
+    {
+      "id": "cloud-002",
+      "category": "cloud",
+      "title": "컨테이너 보안과 이미지 서명 표준화 논의",
+      "summary": "컨테이너 이미지 무결성을 보장하기 위한 서명과 검증 절차가 표준화되고 있다. 배포 파이프라인에 이미지 검증 단계를 넣는 것이 권장된다.",
+      "source": "샘플 출처",
+      "url": "https://example.com/cloud-002",
+      "importance": "low",
+      "readingTime": 6,
+      "tags": ["컨테이너", "이미지서명", "공급망보안"],
+      "publishedAt": "2026-06-11",
+      "learningQuestion": "우리 배포 파이프라인에 이미지 서명 검증을 넣으려면 어디를 수정해야 하는가?",
+      "isSample": true
+    },
+    {
+      "id": "dev-001",
+      "category": "dev",
+      "title": "테스트 자동화 커버리지, 코드 리뷰 효율의 핵심으로",
+      "summary": "테스트 자동화 커버리지가 높을수록 코드 리뷰 부담이 줄고 배포 신뢰도가 올라간다는 분석이 나왔다. 핵심 경로 우선 테스트 전략이 권장된다.",
+      "source": "샘플 출처",
+      "url": "https://example.com/dev-001",
+      "importance": "medium",
+      "readingTime": 5,
+      "tags": ["테스트자동화", "코드리뷰", "품질"],
+      "publishedAt": "2026-06-11",
+      "learningQuestion": "우리 프로젝트에서 테스트를 가장 먼저 보강해야 할 핵심 경로는 어디인가?",
+      "isSample": true
+    },
+    {
+      "id": "dev-002",
+      "category": "dev",
+      "title": "웹 프론트엔드, 접근성 기본 준수가 표준으로 정착",
+      "summary": "semantic HTML과 aria 속성, 키보드 탐색 지원이 프론트엔드 기본 요구사항으로 자리잡고 있다. 접근성은 품질의 일부로 다뤄진다.",
+      "source": "샘플 출처",
+      "url": "https://example.com/dev-002",
+      "importance": "low",
+      "readingTime": 4,
+      "tags": ["접근성", "프론트엔드", "웹표준"],
+      "publishedAt": "2026-06-11",
+      "learningQuestion": "우리가 만든 화면이 키보드만으로 모든 기능을 쓸 수 있는지 어떻게 검증할까?",
+      "isSample": true
+    },
+    {
+      "id": "eco-001",
+      "category": "economy",
+      "title": "환율 변동성 확대, IT 예산 계획에 변수로 작용",
+      "summary": "환율 변동성이 커지면서 해외 클라우드와 소프트웨어 구독 비용 예측이 어려워지고 있다. 예산 계획에 환율 시나리오를 반영하는 것이 권장된다.",
+      "source": "샘플 출처",
+      "url": "https://example.com/eco-001",
+      "importance": "medium",
+      "readingTime": 4,
+      "tags": ["환율", "IT예산", "구독비용"],
+      "publishedAt": "2026-06-11",
+      "learningQuestion": "환율이 10% 오르면 우리 IT 구독 비용은 얼마나 늘어나는가?",
+      "isSample": true
+    },
+    {
+      "id": "eco-002",
+      "category": "economy",
+      "title": "기준금리와 기술 투자 심리, 디지털 전환 속도에 영향",
+      "summary": "금리 환경이 기업의 기술 투자 심리에 영향을 주면서 디지털 전환 프로젝트의 우선순위 조정이 이뤄지고 있다. ROI가 명확한 과제가 우선된다.",
+      "source": "샘플 출처",
+      "url": "https://example.com/eco-002",
+      "importance": "low",
+      "readingTime": 5,
+      "tags": ["금리", "투자심리", "디지털전환"],
+      "publishedAt": "2026-06-11",
+      "learningQuestion": "우리 팀의 과제 중 ROI를 가장 명확히 설명할 수 있는 것은 무엇인가?",
+      "isSample": true
+    }
+  ],
+  "teamLearningQuestions": [
+    "오늘 본 기사 중 우리 업무에 바로 적용할 수 있는 것은 무엇인가?",
+    "보안 패치 소식을 우리 시스템 점검 절차에 어떻게 연결할 수 있는가?",
+    "AI 도구 도입 시 우리 팀이 먼저 합의해야 할 기준은 무엇인가?"
+  ],
+  "discussionTopics": [
+    "AI 코딩 어시스턴트를 사내 개발 표준에 넣는다면 어떤 가이드라인이 필요할까?",
+    "클라우드 비용을 줄이기 위해 이번 분기에 시도해 볼 한 가지는 무엇일까?"
+  ],
+  "recommendedRoutine": [
+    "오늘의 핵심 요약을 먼저 읽고 전체 흐름을 파악한다.",
+    "내 담당 영역과 관련된 카테고리를 필터로 골라 자세히 읽는다.",
+    "팀 학습 질문 중 하나를 골라 5분간 생각하고 메모한다.",
+    "업무에 적용할 아이디어 한 가지를 팀 채널에 공유한다."
+  ],
+  "rssSources": [
+    { "category": "it", "name": "샘플 IT RSS", "url": "https://example.com/rss/it.xml", "status": "연동 예정" },
+    { "category": "ai", "name": "샘플 AI RSS", "url": "https://example.com/rss/ai.xml", "status": "연동 예정" },
+    { "category": "security", "name": "샘플 보안 RSS", "url": "https://example.com/rss/security.xml", "status": "연동 예정" },
+    { "category": "cloud", "name": "샘플 클라우드 RSS", "url": "https://example.com/rss/cloud.xml", "status": "연동 예정" },
+    { "category": "dev", "name": "샘플 개발 RSS", "url": "https://example.com/rss/dev.xml", "status": "연동 예정" },
+    { "category": "economy", "name": "샘플 경제 RSS", "url": "https://example.com/rss/economy.xml", "status": "연동 예정" }
+  ]
+}

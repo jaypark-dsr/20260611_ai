@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<!-- 전산팀 아침 학습용 IT 뉴스 대시보드의 메인 화면 -->
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="전산팀이 매일 아침 IT, AI, 보안, 클라우드, 개발, 경제 동향을 빠르게 학습하는 내부용 뉴스 대시보드" />
+  <title>전산팀 뉴스 대시보드</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+
+  <header class="site-header" role="banner">
+    <div class="container site-header__inner">
+      <div class="site-header__brand">
+        <span class="site-header__logo" aria-hidden="true">📰</span>
+        <div>
+          <h1 class="site-header__title">전산팀 뉴스 대시보드</h1>
+          <p class="site-header__subtitle">매일 아침, 오늘의 IT를 함께 읽고 학습합니다.</p>
+        </div>
+      </div>
+      <p class="site-header__date" id="todayDate" aria-live="polite"></p>
+    </div>
+  </header>
+
+  <main id="main" class="container" role="main">
+
+    <!-- 오늘의 핵심 요약 -->
+    <section class="summary" aria-labelledby="summaryHeading">
+      <h2 id="summaryHeading" class="section-title">오늘의 핵심 요약</h2>
+      <p class="summary__headline" id="summaryHeadline"></p>
+      <ul class="summary__points" id="summaryPoints"></ul>
+    </section>
+
+    <!-- 카테고리 필터 -->
+    <section aria-labelledby="filterHeading">
+      <h2 id="filterHeading" class="section-title">카테고리</h2>
+      <div class="filter" id="categoryFilter" role="group" aria-label="뉴스 카테고리 필터"></div>
+    </section>
+
+    <!-- 뉴스 카드 목록 -->
+    <section aria-labelledby="newsHeading">
+      <div class="section-head">
+        <h2 id="newsHeading" class="section-title">뉴스</h2>
+        <p class="news-count" id="newsCount" aria-live="polite"></p>
+      </div>
+      <div class="news-grid" id="newsGrid"></div>
+      <p class="empty-state" id="emptyState" hidden>해당 카테고리에 표시할 뉴스가 없습니다.</p>
+    </section>
+
+    <!-- 학습과 토론 영역 -->
+    <div class="learning-area">
+      <section class="panel" aria-labelledby="teamQHeading">
+        <h2 id="teamQHeading" class="section-title">팀 학습 질문</h2>
+        <ul class="panel__list" id="teamQuestions"></ul>
+      </section>
+
+      <section class="panel" aria-labelledby="discussHeading">
+        <h2 id="discussHeading" class="section-title">오늘의 토론거리</h2>
+        <ul class="panel__list" id="discussionTopics"></ul>
+      </section>
+
+      <section class="panel" aria-labelledby="routineHeading">
+        <h2 id="routineHeading" class="section-title">추천 아침 루틴</h2>
+        <ol class="panel__list panel__list--ordered" id="recommendedRoutine"></ol>
+      </section>
+    </div>
+
+    <!-- 연동 예정 안내 -->
+    <section class="future-note" aria-labelledby="futureHeading">
+      <h2 id="futureHeading" class="section-title">자동 수집 (연동 예정)</h2>
+      <p>현재 버전은 <code>assets/data/news.json</code>을 수동으로 편집해 갱신합니다. 아래 RSS 소스는 추후 자동 수집 연동을 위해 준비된 항목으로, 지금은 동작하지 않습니다.</p>
+      <ul class="future-note__list" id="rssSources"></ul>
+    </section>
+
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="container">
+      <p>전산팀 내부용 지식 허브 · 데이터는 <code>assets/data/news.json</code>에서 편집합니다.</p>
+      <p class="site-footer__update" id="lastUpdated"></p>
+    </div>
+  </footer>
+
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

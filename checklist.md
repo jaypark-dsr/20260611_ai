@@ -1,0 +1,48 @@
+# checklist — IT 뉴스 대시보드
+
+## 0단계. 산출물 3종
+- [x] PLAN.md 생성
+- [x] checklist.md 생성
+- [x] context-notes.md 생성
+
+## 1단계. 성공 기준 정의
+- [x] 성공 기준 7개 문서화 (PLAN.md 참조)
+
+## 2단계. UI/UX 설계
+- [x] 헤더 구조 설계
+- [x] 오늘의 핵심 요약 영역 설계
+- [x] 카테고리 탭/필터 설계
+- [x] 뉴스 카드 구조 설계
+- [x] 팀 학습 질문 영역 설계
+- [x] 오늘의 토론거리 영역 설계
+- [x] 추천 루틴 영역 설계
+
+## 3단계. 기본 파일 구현
+- [x] index.html 생성 (semantic + aria)
+- [x] assets/css/styles.css 생성 (반응형)
+- [x] assets/js/app.js 생성 (렌더링 + 필터)
+- [x] assets/data/news.json 생성 (샘플 데이터)
+- [x] 각 소스 파일 첫 줄 한국어 역할 주석
+- [x] HTML/CSS/JS 문법 점검
+
+## 4단계. 반응형/접근성 점검
+- [x] 모바일/태블릿/데스크톱 브레이크포인트 확인
+- [x] semantic HTML 사용 확인
+- [x] aria-label, alt 적용 확인
+- [x] 키보드 탐색 가능 확인
+- [x] 명도 대비 확인
+
+## 5단계. 브라우저 호환성 점검
+- [x] Chrome/Edge/Safari 위험 구문 점검
+- [x] fetch 로컬 파일 제약 대응 (내장 폴백 데이터)
+
+## 6단계. 전체 리뷰
+- [x] 행동 지침 1~10 준수 확인
+- [x] 불필요한 기능 추가 여부 확인
+
+## 7단계. 피드백과 후속 과제
+- [x] 다음 버전 후보 목록 정리 (context-notes.md)
+
+## 8단계. 최종 검증과 커밋
+- [x] 정적 파일 구조와 스크립트 로딩 경로 확인
+- [x] git init 및 첫 커밋 "Initialize IT news dashboard project"
