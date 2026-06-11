@@ -20,7 +20,13 @@
           <p class="site-header__subtitle">매일 아침, 오늘의 IT를 함께 읽고 학습합니다.</p>
         </div>
       </div>
-      <p class="site-header__date" id="todayDate" aria-live="polite"></p>
+      <div class="site-header__actions">
+        <p class="site-header__date" id="todayDate" aria-live="polite"></p>
+        <button type="button" class="theme-toggle" id="themeToggle" aria-pressed="false" aria-label="다크 모드 전환">
+          <span class="theme-toggle__icon" aria-hidden="true">🌙</span>
+          <span class="theme-toggle__label">다크</span>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -37,6 +43,23 @@
     <section aria-labelledby="filterHeading">
       <h2 id="filterHeading" class="section-title">카테고리</h2>
       <div class="filter" id="categoryFilter" role="group" aria-label="뉴스 카테고리 필터"></div>
+    </section>
+
+    <!-- 검색, 북마크, 아카이브 도구 -->
+    <section class="toolbar" aria-label="뉴스 검색과 보기 옵션">
+      <div class="toolbar__field">
+        <label class="toolbar__label" for="searchInput">검색</label>
+        <input type="search" id="searchInput" class="toolbar__search" placeholder="제목, 요약, 태그 검색" autocomplete="off" />
+      </div>
+      <div class="toolbar__field">
+        <label class="toolbar__label" for="archiveSelect">날짜</label>
+        <select id="archiveSelect" class="toolbar__select" aria-label="아카이브 날짜 선택">
+          <option value="">최신</option>
+        </select>
+      </div>
+      <button type="button" class="toolbar__bookmark" id="bookmarkToggle" aria-pressed="false">
+        <span aria-hidden="true">★</span> 북마크만 보기
+      </button>
     </section>
 
     <!-- 뉴스 카드 목록 -->

@@ -46,3 +46,16 @@
 ## 8단계. 최종 검증과 커밋
 - [x] 정적 파일 구조와 스크립트 로딩 경로 확인
 - [x] git init 및 첫 커밋 "Initialize IT news dashboard project"
+
+## 2차. RSS 수집, 북마크, 검색, 아카이브, 다크모드
+- [x] scripts/rss-sources.json 카테고리별 피드 구성
+- [x] scripts/fetch-news.mjs 수집 스크립트 (제목/출처/링크/스니펫만 저장)
+- [x] package.json + .gitignore (rss-parser, 수집 전용 의존성)
+- [x] .github/workflows/fetch-news.yml 매일 자동 수집
+- [x] 수집 실행 검증 (피드 12/12 성공, 60건, 아카이브 생성)
+- [x] 일자별 아카이브 + index.json, 프런트엔드 날짜 셀렉트
+- [x] 북마크 localStorage 저장 + 북마크만 보기
+- [x] 키워드 검색 (제목/요약/태그)
+- [x] 다크 모드 토글 + localStorage + OS 설정 추종
+- [x] JS/JSON 문법 검증, 로컬 서버 200 응답 확인
+- [x] 의미 단위 커밋 및 푸시
