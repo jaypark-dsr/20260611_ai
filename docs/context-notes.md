@@ -99,7 +99,25 @@
 - backend `tsc --noEmit` 통과, 전 API 엔드포인트 응답 확인(news 90건, month 병합 90건, 잘못된 날짜 400).
 - frontend `tsc --noEmit` + `vite build` 통과(JS 157KB). dev 프록시(5174, 5173은 타 앱 점유)와 prod 단일 서버(SPA+API+SPA폴백 라우팅) 양쪽 동작 확인.
 
-## 남은 후속 과제 (5차 이후)
+## 5차 구현 결정 (2026-06-12) — 폴더 평탄화 + 멀티 에이전트 하네스
+
+### 폴더 평탄화
+- 작업 디렉토리(AI세미나) 안에 news-dashboard 폴더를 한 겹 더 둔 것이 불필요한 중첩이었다. .git 포함 전부를 루트로 올려 리포 루트=프로젝트 루트로 만들었다. git은 경로가 루트 상대라 파일을 .git과 함께 옮기면 히스토리·상태가 그대로 보존된다(커밋 불필요한 순수 reparenting).
+- Windows에서 node_modules에 .node 바이너리를 로드한 node 프로세스(tsx, vite)가 디렉토리 rename을 막았다. news-dashboard 경로의 node 프로세스만 골라 종료한 뒤 이동했다.
+- .github 폴더는 필요하다는 점을 사용자에게 설명했다. GitHub Actions 워크플로의 표준 위치라 옮기거나 지울 수 없다.
+
+### 멀티 에이전트 하네스 (.claude/agents)
+- 기존 agents/는 단순 문서였다. 실제 Claude Code 서브에이전트로 .claude/agents/에 7종을 만들었다. 프로젝트 전용이라 .claude/agents/에 둔다.
+- 포맷은 claude-code-guide와 공식 문서로 확정했다. name은 소문자·하이픈만 허용(숫자 불가)이라 a11y-responsive-auditor를 accessibility-auditor로 바꿨다. tools는 콤마 구분, model은 opus/sonnet/inherit, 본문이 시스템 프롬프트다.
+- 각 에이전트에 페르소나와 루브릭(채점표)을 넣었다. 최소 권한(리뷰·감사·비평은 읽기 전용), 모델 티어링(판단=opus, 구현=sonnet)을 적용했다.
+- 서브에이전트는 중첩 위임이 불가하다. pl-orchestrator는 분배·게이트 종합을 "설계"하고 실제 호출은 메인 스레드가 한다.
+
+### 권한·에이전트 팀 설정
+- .claude/settings.json(커밋·공유)에 안전한 dev 명령 권한 허용 목록을 두고, git push는 ask로 남겼다.
+- 에이전트 팀은 실험적·개인 설정이라 .claude/settings.local.json(gitignore)에 분리했다. 공식 문서(agent-teams.md) 기준 env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS="1"로 활성화한다. Windows는 분할 패널(tmux)이 미지원이라 teammateMode="in-process"로 둔다. 설치된 Claude Code는 v2.1.86으로 요건(v2.1.32+)을 충족한다.
+- 공식 문서 확인 결과 .claude/agents 정의를 에이전트 팀의 팀원 타입으로 그대로 재사용할 수 있다. 서브에이전트 겸 팀원으로 양용된다.
+
+## 남은 후속 과제 (6차 이후)
 - Slack/사내 포털로 오늘의 요약 자동 공유
 - 팀 학습 체크 현황 공유(현재 읽음·북마크는 개인 localStorage)
 - 클라우드·개발 한국어 소스 보강(현재 영문 비중 높음)

@@ -23,9 +23,12 @@
 | 2차 | RSS 자동 수집(GitHub Actions), 다크모드, 검색, 북마크, 아카이브 | 완료 |
 | 3차 | 한국어 소스 + 주제 재분류 + 중요도 자동분류, 기간 보기, 읽음, 폴백 배너 | 완료 |
 | 4차 | 백엔드(Express+TS) / 프론트(React+Vite+TS) 분리 모노레포 리팩토링 | 완료 |
+| 5차 | 폴더 평탄화 + .claude/agents 멀티 에이전트 하네스(페르소나·루브릭) 구성 | 완료 |
 
 ## 산출물
 
-- 사이트 — index.html, assets/css/styles.css, assets/js/app.js, assets/data/news.json, assets/data/archive/*.json
-- 수집 — scripts/fetch-news.mjs, scripts/rss-sources.json, .github/workflows/fetch-news.yml, package.json
-- 문서 — README.md, CLAUDE.md, docs/PLAN.md, docs/checklist.md, docs/context-notes.md, agents/*.md
+- 프론트 — frontend/src(컴포넌트·훅·lib·types·styles.css)
+- 백엔드 — backend/src(server.ts·types.ts·collect/fetch-news.mjs·rss-sources.json), backend/data
+- 자동화 — .github/workflows/fetch-news.yml
+- 하네스 — .claude/agents/*.md, .claude/settings.json
+- 문서 — README.md, CLAUDE.md, docs/PLAN.md, docs/checklist.md, docs/context-notes.md, docs/agent-harness.md

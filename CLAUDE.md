@@ -35,15 +35,22 @@
 - backend/data/ — news.json, archive/*.json (일자별 스냅샷)
 - .github/workflows/fetch-news.yml (매일 자동 수집)
 - README.md, CLAUDE.md
-- docs/PLAN.md, docs/checklist.md, docs/context-notes.md (작업 산출물)
-- agents/*.md
+- docs/PLAN.md, docs/checklist.md, docs/context-notes.md, docs/agent-harness.md
+- .claude/agents/*.md (프로젝트 전용 멀티 에이전트 하네스)
+- .claude/settings.json (공유 권한 설정)
 
 ## 4. 디렉토리 구조
 
+리포지토리 루트가 곧 프로젝트 루트다(별도 wrapper 폴더 없음).
+
 ```
-news-dashboard/
+(repo root)
   CLAUDE.md
   README.md
+  .claude/
+    agents/                 프로젝트 전용 서브에이전트 7종(하네스)
+    settings.json           공유 권한 허용 목록
+    settings.local.json     로컬 전용(에이전트 팀 활성화 등, gitignore)
   frontend/                 React + Vite + TypeScript SPA
     index.html
     vite.config.ts          /api 를 백엔드(3001)로 프록시
@@ -72,11 +79,7 @@ news-dashboard/
   .github/workflows/
     fetch-news.yml          매일 아침 자동 수집
   docs/
-    PLAN.md, checklist.md, context-notes.md
-  agents/
-    PM.md, reviewer.md, feedback.md, ui_ux_designer.md,
-    component_developer.md, accessibility_responsive_reviewer.md,
-    browser_compatibility_tester.md
+    PLAN.md, checklist.md, context-notes.md, agent-harness.md
 ```
 
 ## 5. 기술 스택
@@ -131,14 +134,26 @@ news-dashboard/
 
 [추정] 추후 RSS 자동 수집, GitHub Actions 배포, Slack 공유, 사내 포털 연동, DB 저장 기능이 추가되면 MCP 또는 외부 API 연동 구성을 재검토한다.
 
-## 10. 에이전트 구성
+## 10. 멀티 에이전트 하네스
 
-모든 에이전트는 위 행동 지침 10개를 공통으로 준수한다. 상세 정의는 `agents/` 디렉토리의 각 문서를 참조한다.
+이 프로젝트는 `.claude/agents/`에 프로젝트 전용 Claude Code 서브에이전트 7종을 둔다. 각 에이전트는 페르소나와 루브릭(채점 기준)을 가진다. 모두 위 행동 지침 10개를 공통으로 준수한다. 상세 운영 방식은 docs/agent-harness.md를 참조한다.
 
-- PM — 전체 조율, 의사결정, 우선순위, 모델 전환 권한
-- reviewer — 산출물 리뷰와 품질 게이트
-- feedback — 사용자 관점 개선점 도출
-- ui_ux_designer — 화면, 정보, 사용자 흐름 설계
-- component_developer — HTML, CSS, JS 구현
-- accessibility_responsive_reviewer — 반응형과 접근성 점검
-- browser_compatibility_tester — 브라우저 호환성 점검
+| 에이전트 | 역할 | 모델 | 권한 |
+| --- | --- | --- | --- |
+| pl-orchestrator | 계획·분배·릴리즈 게이트 | opus | 읽기 + 계획 작성 |
+| frontend-engineer | React/Vite/TS 구현 | sonnet | 읽기/쓰기/편집/Bash |
+| backend-engineer | Express/TS API + 수집 파이프라인 | sonnet | 읽기/쓰기/편집/Bash |
+| code-reviewer | 코드 품질 게이트 | opus | 읽기 전용 |
+| qa-tester | QA/QC 전수 테스트 | opus | 읽기/Bash/테스트 작성 |
+| ux-content-critic | 전산팀 사용자 관점 UX·콘텐츠 | opus | 읽기 전용 |
+| accessibility-auditor | 접근성·반응형·호환성 감사 | opus | 읽기 전용 |
+
+설계 원칙.
+- 최소 권한 — 리뷰·감사·비평 에이전트는 읽기 전용으로 코드를 수정하지 못한다. 구현은 엔지니어만 한다.
+- 모델 티어링 — 판단·게이트 역할은 opus, 구현(throughput) 역할은 sonnet. 비용 대비 품질을 맞춘다.
+- 게이트 루브릭 — 각 품질 에이전트는 명시적 채점표로 통과/보류를 판정하고, pl-orchestrator가 이를 모아 릴리즈 go/no-go를 결정한다.
+
+호출 방식.
+- 단일 위임은 `@agent-<name>`으로 부르거나 작업 설명이 description과 맞으면 메인 스레드가 자동 위임한다.
+- 병렬 협업이 필요하면 에이전트 팀(experimental)을 쓴다. `.claude/settings.local.json`의 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`로 활성화하며, 이 서브에이전트 정의를 팀원 타입으로 재사용한다. 자세한 내용은 docs/agent-harness.md를 참조한다.
+- 서브에이전트는 다른 서브에이전트를 직접 호출하지 못한다. 분배·종합은 메인 스레드(또는 팀 리드)가 수행한다.

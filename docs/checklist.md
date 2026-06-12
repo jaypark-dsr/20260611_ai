@@ -75,3 +75,12 @@
 - [x] Vite 프록시(/api→3001), 프로덕션 단일 서버 정적 서빙
 - [x] backend tsc / frontend tsc+build 통과, dev·prod 양 모드 동작 확인
 - [x] 워크플로 경로 갱신(backend), 문서 전면 갱신, 커밋·푸시
+
+## 5차. 폴더 평탄화 + 멀티 에이전트 하네스
+- [x] news-dashboard wrapper 제거, 리포 루트=프로젝트 루트로 평탄화(git 히스토리 보존)
+- [x] .claude/agents/ 서브에이전트 7종(페르소나+루브릭+프론트매터, 최소권한, 모델 티어링)
+- [x] name 규칙 준수(소문자·하이픈), 프론트매터 파싱 검증
+- [x] .claude/settings.json 공유 권한 + settings.local.json 에이전트 팀 활성화(공식 문서 기준)
+- [x] 옛 agents/ 폴더 제거
+- [x] CLAUDE.md 하네스 섹션 + docs/agent-harness.md + README 갱신
+- [x] 검증 후 커밋·푸시

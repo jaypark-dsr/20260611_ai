@@ -3,11 +3,16 @@ node_modules/
 **/node_modules/
 npm-debug.log*
 
-# 빌드 산출물
+# 빌드 산출물과 캐시
 frontend/dist/
 backend/dist/
+**/.vite/
 
 # 로컬 환경
 .env
 .env.local
 .DS_Store
+
+# Claude Code 로컬 전용(세션별 메모리, 로컬 설정)
+.claude/agent-memory-local/
+.claude/settings.local.json

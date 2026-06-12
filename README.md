@@ -94,10 +94,20 @@ npm run fetch        # RSS 수집 → data/news.json + data/archive/{날짜}.jso
 
 > 저작권 준수. 제목, 출처, 링크와 RSS가 제공하는 요약 스니펫(길이 제한)만 저장한다. 본문 전체는 저장하지 않는다.
 
+## 멀티 에이전트 하네스
+
+이 프로젝트는 `.claude/agents/`에 프로젝트 전용 Claude Code 서브에이전트 7종을 둔다. 각 에이전트는 페르소나와 루브릭(채점표)을 가진다.
+
+- pl-orchestrator (계획·릴리즈 게이트) · frontend-engineer · backend-engineer · code-reviewer · qa-tester · ux-content-critic · accessibility-auditor
+- 리뷰·감사 에이전트는 읽기 전용, 구현은 엔지니어만. 판단 역할은 opus, 구현은 sonnet으로 티어링.
+- 단일 위임은 `@agent-<name>`으로 호출한다. 병렬 협업은 에이전트 팀(experimental, `.claude/settings.local.json`에서 활성화)으로 같은 정의를 팀원으로 재사용한다.
+- 자세한 운영 방식은 `docs/agent-harness.md`를 참조한다.
+
 ## 문서
 
 - `CLAUDE.md` — 운영 기준과 행동 지침
+- `docs/agent-harness.md` — 멀티 에이전트 하네스 운영 방식
 - `docs/PLAN.md` — 계획과 성공 기준
 - `docs/checklist.md` — 단계별 진행
 - `docs/context-notes.md` — 결정 사항과 가정
-- `agents/` — 에이전트 역할 정의
+- `.claude/agents/` — 프로젝트 전용 서브에이전트 정의
