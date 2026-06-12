@@ -30,5 +30,5 @@
 - 프론트 — frontend/src(컴포넌트·훅·lib·types·styles.css)
 - 백엔드 — backend/src(server.ts·types.ts·collect/fetch-news.mjs·rss-sources.json), backend/data
 - 자동화 — .github/workflows/fetch-news.yml
-- 하네스 — .claude/agents/*.md, .claude/settings.json
+- 하네스 — .claude/agents/*.md, .claude/settings.local.json(에이전트 팀 활성화)
 - 문서 — README.md, CLAUDE.md, docs/PLAN.md, docs/checklist.md, docs/context-notes.md, docs/agent-harness.md

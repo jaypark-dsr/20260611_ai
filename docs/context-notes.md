@@ -113,7 +113,7 @@
 - 서브에이전트는 중첩 위임이 불가하다. pl-orchestrator는 분배·게이트 종합을 "설계"하고 실제 호출은 메인 스레드가 한다.
 
 ### 권한·에이전트 팀 설정
-- .claude/settings.json(커밋·공유)에 안전한 dev 명령 권한 허용 목록을 두고, git push는 ask로 남겼다.
+- 처음엔 .claude/settings.json(커밋·공유)에 안전한 dev 명령 권한 허용 목록을 뒀으나, 사용자가 불필요하다고 판단해 제거했다. 에이전트 동작에는 무관한 편의 설정이었다.
 - 에이전트 팀은 실험적·개인 설정이라 .claude/settings.local.json(gitignore)에 분리했다. 공식 문서(agent-teams.md) 기준 env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS="1"로 활성화한다. Windows는 분할 패널(tmux)이 미지원이라 teammateMode="in-process"로 둔다. 설치된 Claude Code는 v2.1.86으로 요건(v2.1.32+)을 충족한다.
 - 공식 문서 확인 결과 .claude/agents 정의를 에이전트 팀의 팀원 타입으로 그대로 재사용할 수 있다. 서브에이전트 겸 팀원으로 양용된다.
 

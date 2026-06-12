@@ -80,7 +80,7 @@
 - [x] news-dashboard wrapper 제거, 리포 루트=프로젝트 루트로 평탄화(git 히스토리 보존)
 - [x] .claude/agents/ 서브에이전트 7종(페르소나+루브릭+프론트매터, 최소권한, 모델 티어링)
 - [x] name 규칙 준수(소문자·하이픈), 프론트매터 파싱 검증
-- [x] .claude/settings.json 공유 권한 + settings.local.json 에이전트 팀 활성화(공식 문서 기준)
+- [x] .claude/settings.local.json 에이전트 팀 활성화(공식 문서 기준). 공유 settings.json은 불필요 판단으로 제거
 - [x] 옛 agents/ 폴더 제거
 - [x] CLAUDE.md 하네스 섹션 + docs/agent-harness.md + README 갱신
 - [x] 검증 후 커밋·푸시

@@ -80,6 +80,5 @@
 ## 파일 위치
 
 - 에이전트 정의 — `.claude/agents/*.md` (커밋·공유)
-- 공유 권한 — `.claude/settings.json` (커밋·공유)
 - 로컬 설정 — `.claude/settings.local.json` (gitignore, 에이전트 팀 활성화 등 개인·실험 설정)
 - 팀 런타임 상태 — `~/.claude/teams/`, `~/.claude/tasks/` (자동 생성, 수동 편집 금지)

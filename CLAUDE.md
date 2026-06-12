@@ -37,7 +37,6 @@
 - README.md, CLAUDE.md
 - docs/PLAN.md, docs/checklist.md, docs/context-notes.md, docs/agent-harness.md
 - .claude/agents/*.md (프로젝트 전용 멀티 에이전트 하네스)
-- .claude/settings.json (공유 권한 설정)
 
 ## 4. 디렉토리 구조
 
@@ -49,7 +48,6 @@
   README.md
   .claude/
     agents/                 프로젝트 전용 서브에이전트 7종(하네스)
-    settings.json           공유 권한 허용 목록
     settings.local.json     로컬 전용(에이전트 팀 활성화 등, gitignore)
   frontend/                 React + Vite + TypeScript SPA
     index.html
